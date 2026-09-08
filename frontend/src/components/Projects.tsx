@@ -120,16 +120,15 @@ export default function Projects() {
               <div className="w-full overflow-hidden rounded-2xl border border-gray-800 bg-black">
 
                 {/* Terminal header */}
-                <div className="flex items-center gap-2 border-b border-gray-800 px-5 py-4">
-                  <div className="h-3 w-3 rounded-full bg-red-400" />
-                  <div className="h-3 w-3 rounded-full bg-yellow-400" />
-                  <div className="h-3 w-3 rounded-full bg-green-400" />
 
-                  <span className="ml-3 text-xs text-gray-500">
-                    <p className="mt-3 text-center text-xs text-gray-500">
-                      Test my own shell commands →
-                    </p>
-                  </span>
+                  <div className="flex items-center gap-2 border-b border-gray-800 px-5 py-4">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-yellow-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+
+                    <span className="ml-3 text-xs text-gray-600">
+                      minishell
+                    </span>
                 </div>
 
                 {/* Terminal */}
@@ -139,37 +138,40 @@ export default function Projects() {
               </div>
             </div>
           </div>
+                <p className="mt-3 text-center text-green-500">
+                  Try your own shell commands →
+                </p>
         </div>
 
         {/* Other projects */}
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <div className="mt-8 grid gap-5 md:grid-cols-2">
           {projects.map((project) => (
             <article
               key={project.title}
-              className="group flex min-h-[390px] flex-col rounded-3xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-2xl md:p-10"
+              className="group flex min-h-[380px] flex-col rounded-[28px] border border-gray-200/80 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)] md:p-10"
             >
-              {/* Top */}
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
-                    {project.category}
-                  </p>
+              {/* Header */}
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-400">
+                  {project.category}
+                </p>
           
-                  <h3 className="mt-3 text-3xl font-bold tracking-tight text-gray-950">
-                    {project.title}
-                  </h3>
-                </div>
+                <h3 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-gray-950">
+                  {project.title}
+                </h3>
+              </div>
           
               {/* Description */}
-              <p className="mt-7 max-w-xl leading-7 text-gray-600">
+              <p className="mt-6 max-w-lg text-[15px] leading-7 text-gray-500">
                 {project.description}
               </p>
           
               {/* Technologies */}
-              <div className="mt-8 flex flex-wrap gap-2">
+              <div className="mt-7 flex flex-wrap gap-2">
                 {project.technologies.map((technology) => (
                   <span
                     key={technology}
-                    className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors duration-300 group-hover:bg-gray-950 group-hover:text-white"
+                    className="rounded-full bg-gray-100/80 px-3.5 py-1.5 text-xs font-medium text-gray-500 transition-all duration-300 group-hover:bg-gray-950 group-hover:text-white"
                   >
                     {technology}
                   </span>
@@ -182,10 +184,10 @@ export default function Projects() {
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 transition-colors duration-300 hover:text-black"
+                  className="inline-flex items-center gap-2 text-sm font-medium text-gray-400 transition-all duration-300 hover:text-gray-950"
                 >
                   View on GitHub
-                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                  <span className="transition-transform duration-300 group-hover:translate-x-0.5">
                     ↗
                   </span>
                 </a>
@@ -194,33 +196,31 @@ export default function Projects() {
           ))}
 
           {/* Transcendence */}
-          <article className="group flex min-h-[390px] flex-col rounded-3xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-2xl md:p-10">
-            {/* Top */}
-            <div className="flex items-start justify-between gap-6">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
-                  Full-stack application
-                </p>
+          <article className="group flex min-h-[380px] flex-col rounded-[28px] border border-gray-200/80 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)] md:p-10">
+            {/* Header */}
+            <div>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-400">
+                Full-stack application
+              </p>
         
-                <h3 className="mt-3 text-3xl font-bold tracking-tight text-gray-950">
-                  Transcendence
-                </h3>
-              </div>
+              <h3 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-gray-950">
+                Transcendence
+              </h3>
             </div>
         
             {/* Description */}
-            <p className="mt-7 max-w-xl leading-7 text-gray-600">
+            <p className="mt-6 max-w-lg text-[15px] leading-7 text-gray-500">
               A real-time multiplayer web application combining frontend, backend,
               authentication, game logic and deployment.
             </p>
         
             {/* Technologies */}
-            <div className="mt-8 flex flex-wrap gap-2">
+            <div className="mt-7 flex flex-wrap gap-2">
               {["TypeScript", "React", "Node.js", "WebSockets", "Docker"].map(
                 (technology) => (
                   <span
                     key={technology}
-                    className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors duration-300 group-hover:bg-gray-950 group-hover:text-white"
+                    className="rounded-full bg-gray-100/80 px-3.5 py-1.5 text-xs font-medium text-gray-500 transition-all duration-300 group-hover:bg-gray-950 group-hover:text-white"
                   >
                     {technology}
                   </span>
@@ -232,18 +232,22 @@ export default function Projects() {
             <div className="mt-auto flex flex-wrap gap-3 pt-10">
               <a
                 href="/projects/transcendence"
-                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-gray-800"
+                className="group/demo inline-flex items-center gap-2 rounded-full bg-gray-950 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
               >
-                Play demo →
+                <span>Play demo</span>
+                <span className="transition-transform duration-300 group-hover/demo:translate-x-1">
+                  →
+                </span>
               </a>
             
               <a
                 href="https://github.com/Isly91/Transcendence"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 transition-all duration-300 hover:border-gray-950 hover:text-black"
+                className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-950"
               >
-                GitHub ↗
+                GitHub
+                <span>↗</span>
               </a>
             </div>
           </article>
