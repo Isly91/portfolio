@@ -1,0 +1,15 @@
+{
+  "name": "minishell-backend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "node-pty": "^1.1.0",
+    "ws": "^8.21.3"
+  }
+}

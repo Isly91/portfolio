@@ -1,0 +1,14 @@
+services:
+  minishell-backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    user: root
+    ports:
+      - "4000:4000"
+    environment:
+      PORT: 4000
+      FRONTEND_ORIGIN: http://localhost:3000
+      MINISHELL_IMAGE: isly-minishell:latest
+    volumes:
+      - /run/user/112404/docker.sock:/var/run/docker.sock

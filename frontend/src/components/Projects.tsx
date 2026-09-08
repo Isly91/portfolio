@@ -1,3 +1,5 @@
+import InteractiveTerminal from "../components/minishell/InteractiveTerminal";
+
 const projects = [
   {
     title: "Push_swap",
@@ -101,18 +103,12 @@ export default function Projects() {
               </div>
 
               <div className="mt-10 flex flex-wrap gap-4">
-                <button
-                  type="button"
-                  className="rounded-full bg-white px-6 py-3 text-sm font-medium text-black transition hover:bg-gray-200"
-                >
-                  ▶ Run project
-                </button>
 
                 <a
                   href="https://github.com/Isly91/minishell"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-gray-700 px-6 py-3 text-sm font-medium transition hover:bg-gray-900"
+                  className="rounded-full border border-gray-700 px-6 py-3 text-sm font-medium transition hover:bg-gray-900 hover:text-green-400"
                 >
                   View source ↗
                 </a>
@@ -130,55 +126,15 @@ export default function Projects() {
                   <div className="h-3 w-3 rounded-full bg-green-400" />
 
                   <span className="ml-3 text-xs text-gray-500">
-                    minishell
+                    <p className="mt-3 text-center text-xs text-gray-500">
+                      Test my own shell commands →
+                    </p>
                   </span>
                 </div>
 
                 {/* Terminal */}
                 <div className="min-h-[320px] p-6 font-mono text-sm leading-7">
-                  <p className="text-gray-500">
-                    Isly's Minishell
-                  </p>
-
-                  <p className="mt-4">
-                    <span className="text-green-400">$</span>{" "}
-                    <span className="text-gray-200">
-                      echo "Hello world"
-                    </span>
-                  </p>
-
-                  <p className="text-gray-300">
-                    Hello world
-                  </p>
-
-                  <p className="mt-3">
-                    <span className="text-green-400">$</span>{" "}
-                    <span className="text-gray-200">
-                      pwd
-                    </span>
-                  </p>
-
-                  <p className="text-gray-300">
-                    /home/isly
-                  </p>
-
-                  <p className="mt-3">
-                    <span className="text-green-400">$</span>{" "}
-                    <span className="text-gray-200">
-                      ls
-                    </span>
-                  </p>
-
-                  <p className="text-gray-400">
-                    Makefile&nbsp;&nbsp; minishell.h&nbsp;&nbsp; src
-                  </p>
-
-                  <p className="mt-3">
-                    <span className="text-green-400">$</span>{" "}
-                    <span className="animate-pulse text-gray-300">
-                      █
-                    </span>
-                  </p>
+                  <InteractiveTerminal />
                 </div>
               </div>
             </div>
@@ -190,92 +146,107 @@ export default function Projects() {
           {projects.map((project) => (
             <article
               key={project.title}
-              className="group rounded-3xl border border-gray-200 p-8 transition duration-300 hover:-translate-y-1 hover:shadow-xl"
+              className="group flex min-h-[390px] flex-col rounded-3xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-2xl md:p-10"
             >
-              <div className="flex items-start justify-between gap-4">
-
+              {/* Top */}
                 <div>
-                  <p className="text-sm font-medium text-gray-500">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
                     {project.category}
                   </p>
-
-                  <h3 className="mt-2 text-3xl font-semibold tracking-tight">
+          
+                  <h3 className="mt-3 text-3xl font-bold tracking-tight text-gray-950">
                     {project.title}
                   </h3>
                 </div>
-
-                <span className="text-2xl transition-transform duration-300 group-hover:translate-x-1">
-                  ↗
-                </span>
-              </div>
-
-              <p className="mt-6 leading-7 text-gray-600">
+          
+              {/* Description */}
+              <p className="mt-7 max-w-xl leading-7 text-gray-600">
                 {project.description}
               </p>
-
+          
+              {/* Technologies */}
               <div className="mt-8 flex flex-wrap gap-2">
                 {project.technologies.map((technology) => (
                   <span
                     key={technology}
-                    className="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700"
+                    className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors duration-300 group-hover:bg-gray-950 group-hover:text-white"
                   >
                     {technology}
                   </span>
                 ))}
               </div>
-
-              <div className="mt-8">
+              
+              {/* Footer */}
+              <div className="mt-auto pt-10">
                 <a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm font-medium transition hover:underline"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-gray-500 transition-colors duration-300 hover:text-black"
                 >
-                  View on GitHub ↗
+                  View on GitHub
+                  <span className="transition-transform duration-300 group-hover:translate-x-1">
+                    ↗
+                  </span>
                 </a>
               </div>
             </article>
           ))}
-        </div>
 
-        {/* Transcendence */}
-        <div className="mt-6 overflow-hidden rounded-3xl border border-gray-200 p-8 md:p-12">
-          <p className="text-sm font-medium uppercase tracking-[0.25em] text-gray-500">
-            Full-stack application
-          </p>
-
-          <div className="mt-4 flex flex-col justify-between gap-8 md:flex-row md:items-end">
-            <div className="max-w-3xl">
-              <h3 className="text-4xl font-bold tracking-tight">
-                Transcendence
-              </h3>
-
-              <p className="mt-5 text-lg leading-8 text-gray-600">
-                A real-time multiplayer web application combining frontend,
-                backend, authentication, game logic and deployment.
-              </p>
+          {/* Transcendence */}
+          <article className="group flex min-h-[390px] flex-col rounded-3xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-gray-300 hover:shadow-2xl md:p-10">
+            {/* Top */}
+            <div className="flex items-start justify-between gap-6">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-400">
+                  Full-stack application
+                </p>
+        
+                <h3 className="mt-3 text-3xl font-bold tracking-tight text-gray-950">
+                  Transcendence
+                </h3>
+              </div>
             </div>
-
-            <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                className="rounded-full bg-black px-6 py-3 text-sm font-medium text-white transition hover:bg-gray-800"
+        
+            {/* Description */}
+            <p className="mt-7 max-w-xl leading-7 text-gray-600">
+              A real-time multiplayer web application combining frontend, backend,
+              authentication, game logic and deployment.
+            </p>
+        
+            {/* Technologies */}
+            <div className="mt-8 flex flex-wrap gap-2">
+              {["TypeScript", "React", "Node.js", "WebSockets", "Docker"].map(
+                (technology) => (
+                  <span
+                    key={technology}
+                    className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors duration-300 group-hover:bg-gray-950 group-hover:text-white"
+                  >
+                    {technology}
+                  </span>
+                ),
+              )}
+            </div>
+            
+            {/* Footer */}
+            <div className="mt-auto flex flex-wrap gap-3 pt-10">
+              <a
+                href="/projects/transcendence"
+                className="rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-gray-800"
               >
-				<a href="/projects/transcendence" className="text-white">
-                	Play demo →
-              	</a>
-              </button>
-
+                Play demo →
+              </a>
+            
               <a
                 href="https://github.com/Isly91/Transcendence"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-gray-300 px-6 py-3 text-sm font-medium transition hover:bg-gray-100"
+                className="rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-600 transition-all duration-300 hover:border-gray-950 hover:text-black"
               >
                 GitHub ↗
               </a>
             </div>
-          </div>
+          </article>
         </div>
 
       </div>
