@@ -1,15 +1,20 @@
 NAME = portfolio
 
 COMPOSE = docker compose
+WEBSERVER_IMAGE = isly-webserver:latest
+WEBSERVER_DIR = ./webserver-backend/webserver
 
-.PHONY: all build up down restart logs ps clean fclean re clean-all
+.PHONY: all build build-webserver up down restart logs ps clean fclean clean-all re
 
 all: up
 
-build:
+build: build-webserver
 	$(COMPOSE) build
 
-up:
+build-webserver:
+	docker build -t $(WEBSERVER_IMAGE) $(WEBSERVER_DIR)
+
+up: build-webserver
 	$(COMPOSE) up --build -d
 
 down:

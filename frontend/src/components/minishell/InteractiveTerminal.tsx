@@ -19,7 +19,7 @@ export default function InteractiveTerminal() {
       fontSize: 14,
       theme: {
         background: "#000000",
-        foreground: "#d1d5db",
+        foreground: "#00ff00",
       },
     });
 

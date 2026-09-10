@@ -13,6 +13,7 @@ services:
       NODE_ENV: development
     depends_on:
       - minishell-backend
+      - webserver-backend
 
   minishell-backend:
     build:
@@ -26,5 +27,20 @@ services:
     environment:
       NODE_ENV: development
       MINISHELL_IMAGE: isly-minishell:latest
+    mem_limit: 512m
+    pids_limit: 128
+    
+  webserver-backend:
+    build:
+      context: ./webserver-backend/
+    container_name: portfolio_webserver_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./webserver-backend:/app
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+    environment:
+      NODE_ENV: development
+      WEBSERVER_IMAGE: isly-webserver:latest
     mem_limit: 512m
     pids_limit: 128
