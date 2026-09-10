@@ -45,214 +45,199 @@ const projects = [
 
 export default function Projects() {
   return (
-    <section id="projects" className="px-8 py-32">
+    <section id="projects" className="relative px-6 py-24 md:px-8 md:py-32">
+      {/* Background Elements */}
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute left-1/4 bottom-0 h-96 w-96 rounded-full bg-gradient-to-tr from-blue-200/20 to-transparent blur-3xl" />
+        <div className="absolute right-0 top-1/3 h-96 w-96 rounded-full bg-gradient-to-bl from-purple-200/20 to-transparent blur-3xl" />
+      </div>
+
       <div className="mx-auto max-w-7xl">
-
         {/* Header */}
-        <div className="max-w-3xl">
-          <p className="text-sm font-medium uppercase tracking-[0.3em] text-gray-500">
-            Projects
-          </p>
+        <div className="mb-12 space-y-4">
+          <span className="inline-block rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-1.5 text-sm font-semibold text-blue-700">
+            Featured Work
+          </span>
 
-          <h2 className="mt-4 text-4xl font-bold tracking-tight md:text-6xl">
-            Things I've built.
-          </h2>
+          <div className="space-y-4 max-w-3xl">
+            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
+              Projects &
+              <br />
+              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Achievements
+              </span>
+            </h2>
 
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            From low-level systems programming and algorithms to full-stack
-            applications.
-          </p>
+            <p className="text-lg leading-8 text-gray-600">
+              From low-level systems programming and algorithms to full-stack applications. Each project represents a learning opportunity and technical challenge.
+            </p>
+          </div>
         </div>
 
-        {/* Minishell */}
-        <div className="mt-16 overflow-hidden rounded-3xl border border-gray-200 bg-gray-950 text-white shadow-2xl">
-          <div className="grid lg:grid-cols-2">
-
+        {/* Minishell - Featured */}
+        <div className="mb-12 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-b from-gray-900 to-black text-white shadow-2xl transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:border-blue-400/50">
+          <div className="grid gap-8 lg:gap-0 lg:grid-cols-2">
             {/* Content */}
-            <div className="p-8 md:p-12 lg:p-16">
-              <p className="text-sm font-medium uppercase tracking-[0.25em] text-gray-400">
-                Featured project · Systems Programming
-              </p>
+            <div className="p-8 md:p-10 lg:p-12 flex flex-col justify-between">
+              <div>
+                <span className="inline-block rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-3 py-1 text-xs font-semibold text-blue-300 border border-blue-500/30">
+                  Featured · Systems Programming
+                </span>
 
-              <h3 className="mt-5 text-4xl font-bold tracking-tight md:text-5xl">
-                Minishell
-              </h3>
+                <h3 className="mt-6 text-3xl md:text-4xl font-bold tracking-tight">
+                  Minishell
+                </h3>
 
-              <p className="mt-6 max-w-xl text-lg leading-8 text-gray-300">
-                A Unix shell implemented from scratch as part of the 42/Codam
-                curriculum. The project handles command parsing, built-ins,
-                environment variables, pipes, redirections and signals.
-              </p>
+                <p className="mt-4 max-w-xl text-base md:text-lg leading-8 text-gray-300">
+                  A fully-functional Unix shell implemented from scratch in C. Handles command parsing, built-ins, environment variables, pipes, redirections, and signal management.
+                </p>
 
-              <div className="mt-8 flex flex-wrap gap-2">
-                {[
-                  "C",
-                  "Unix",
-                  "Processes",
-                  "Pipes",
-                  "Redirections",
-                  "Signals",
-                ].map((technology) => (
-                  <span
-                    key={technology}
-                    className="rounded-full border border-gray-700 px-4 py-2 text-sm text-gray-300"
-                  >
-                    {technology}
-                  </span>
-                ))}
-              </div>
-
-              <div className="mt-10 flex flex-wrap gap-4">
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {["C", "Unix", "Processes", "Pipes", "Redirections", "Signals"].map(
+                    (tech) => (
+                      <span
+                        key={tech}
+                        className="rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 px-3 py-1 text-xs font-medium text-blue-300 border border-blue-500/30"
+                      >
+                        {tech}
+                      </span>
+                    )
+                  )}
+                </div>
 
                 <a
                   href="https://github.com/Isly91/minishell"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-gray-700 px-6 py-3 text-sm font-medium transition hover:bg-gray-900 hover:text-green-400"
+                  className="mt-8 inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/30"
                 >
-                  View source ↗
+                  View source →
                 </a>
               </div>
             </div>
 
-            {/* Terminal preview */}
-            <div className="flex items-center bg-gray-900 p-6 md:p-10">
-              <div className="w-full overflow-hidden rounded-2xl border border-gray-800 bg-black">
-
-                {/* Terminal header */}
-
-                  <div className="flex items-center gap-2 border-b border-gray-800 px-5 py-4">
-                    <div className="h-3 w-3 rounded-full bg-red-400" />
-                    <div className="h-3 w-3 rounded-full bg-yellow-400" />
-                    <div className="h-3 w-3 rounded-full bg-green-400" />
-
-                    <span className="ml-3 text-xs text-gray-600">
-                      minishell
-                    </span>
+            {/* Terminal Preview */}
+            <div className="flex items-center bg-black/50 p-6 md:p-8 lg:p-10 border-l border-gray-800">
+              <div className="w-full overflow-hidden rounded-xl border border-gray-800 bg-black/80">
+                <div className="flex items-center gap-2 border-b border-gray-800 px-4 py-3">
+                  <div className="h-2.5 w-2.5 rounded-full bg-red-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-yellow-500" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-green-500" />
+                  <span className="ml-2 text-xs text-gray-500">minishell</span>
                 </div>
-
-                {/* Terminal */}
-                <div className="min-h-[320px] p-6 font-mono text-sm leading-7">
+                <div className="min-h-[280px] p-4 font-mono text-xs text-green-400">
                   <InteractiveTerminal />
                 </div>
               </div>
             </div>
           </div>
-                <p className="mt-3 text-center text-green-500">
-                  Try your own shell commands →
-                </p>
         </div>
 
-        {/* Other projects */}
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
+        {/* Other Projects Grid */}
+        <div className="grid gap-6 md:grid-cols-2">
           {projects.map((project) => (
             <article
               key={project.title}
-              className="group flex min-h-[380px] flex-col rounded-[28px] border border-gray-200/80 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)] md:p-10"
+              className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-8 md:p-10 transition-all duration-300 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10"
             >
-              {/* Header */}
-              <div>
-                <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-400">
+              {/* Category Badge */}
+              <div className="inline-flex w-fit">
+                <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
                   {project.category}
-                </p>
-          
-                <h3 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-gray-950">
-                  {project.title}
-                </h3>
+                </span>
               </div>
-          
+
+              {/* Title */}
+              <h3 className="mt-4 text-2xl font-bold text-gray-900">
+                {project.title}
+              </h3>
+
               {/* Description */}
-              <p className="mt-6 max-w-lg text-[15px] leading-7 text-gray-500">
+              <p className="mt-4 flex-grow text-base leading-7 text-gray-600">
                 {project.description}
               </p>
-          
+
               {/* Technologies */}
-              <div className="mt-7 flex flex-wrap gap-2">
-                {project.technologies.map((technology) => (
+              <div className="mt-6 flex flex-wrap gap-2">
+                {project.technologies.map((tech) => (
                   <span
-                    key={technology}
-                    className="rounded-full bg-gray-100/80 px-3.5 py-1.5 text-xs font-medium text-gray-500 transition-all duration-300 group-hover:bg-gray-950 group-hover:text-white"
+                    key={tech}
+                    className="rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-3 py-1 text-xs font-semibold text-blue-700 transition-all duration-300 group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white"
                   >
-                    {technology}
+                    {tech}
                   </span>
                 ))}
               </div>
-              
-              {/* Footer */}
-              <div className="mt-auto pt-10">
+
+              {/* Footer Link */}
+              <div className="mt-8 pt-6 border-t border-gray-200">
                 <a
                   href={project.github}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-medium text-gray-400 transition-all duration-300 hover:text-gray-950"
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition-all duration-300 hover:text-blue-600 hover:gap-3"
                 >
                   View on GitHub
-                  <span className="transition-transform duration-300 group-hover:translate-x-0.5">
-                    ↗
-                  </span>
+                  <span>→</span>
                 </a>
               </div>
             </article>
           ))}
 
           {/* Transcendence */}
-          <article className="group flex min-h-[380px] flex-col rounded-[28px] border border-gray-200/80 bg-white p-8 transition-all duration-500 hover:-translate-y-1 hover:border-gray-300 hover:shadow-[0_20px_60px_-20px_rgba(0,0,0,0.15)] md:p-10">
-            {/* Header */}
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-gray-400">
-                Full-stack application
-              </p>
-        
-              <h3 className="mt-4 text-3xl font-semibold tracking-[-0.03em] text-gray-950">
-                Transcendence
-              </h3>
+          <article className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-8 md:p-10 transition-all duration-300 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10">
+            {/* Category Badge */}
+            <div className="inline-flex w-fit">
+              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
+                Full-Stack Web
+              </span>
             </div>
-        
+
+            {/* Title */}
+            <h3 className="mt-4 text-2xl font-bold text-gray-900">
+              Transcendence
+            </h3>
+
             {/* Description */}
-            <p className="mt-6 max-w-lg text-[15px] leading-7 text-gray-500">
-              A real-time multiplayer web application combining frontend, backend,
-              authentication, game logic and deployment.
+            <p className="mt-4 flex-grow text-base leading-7 text-gray-600">
+              A real-time multiplayer web application combining frontend, backend, authentication, game logic and deployment.
             </p>
-        
+
             {/* Technologies */}
-            <div className="mt-7 flex flex-wrap gap-2">
+            <div className="mt-6 flex flex-wrap gap-2">
               {["TypeScript", "React", "Node.js", "WebSockets", "Docker"].map(
-                (technology) => (
+                (tech) => (
                   <span
-                    key={technology}
-                    className="rounded-full bg-gray-100/80 px-3.5 py-1.5 text-xs font-medium text-gray-500 transition-all duration-300 group-hover:bg-gray-950 group-hover:text-white"
+                    key={tech}
+                    className="rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-3 py-1 text-xs font-semibold text-blue-700 transition-all duration-300 group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white"
                   >
-                    {technology}
+                    {tech}
                   </span>
-                ),
+                )
               )}
             </div>
-            
-            {/* Footer */}
-            <div className="mt-auto flex flex-wrap gap-3 pt-10">
+
+            {/* Footer Links */}
+            <div className="mt-8 pt-6 border-t border-gray-200 flex gap-3">
               <a
                 href="/projects/transcendence"
-                className="group/demo inline-flex items-center gap-2 rounded-full bg-gray-950 px-5 py-2.5 text-sm font-medium text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-black hover:shadow-lg"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition-all duration-300 hover:text-blue-600 hover:gap-3"
               >
-                <span>Play demo</span>
-                <span className="transition-transform duration-300 group-hover/demo:translate-x-1">
-                  →
-                </span>
+                Play demo
+                <span>→</span>
               </a>
-            
               <a
                 href="https://github.com/Isly91/Transcendence"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full border border-gray-200 px-5 py-2.5 text-sm font-medium text-gray-500 transition-all duration-300 hover:border-gray-300 hover:bg-gray-50 hover:text-gray-950"
+                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition-all duration-300 hover:text-blue-600 hover:gap-3"
               >
-                GitHub
-                <span>↗</span>
+                View on GitHub
+                <span>→</span>
               </a>
             </div>
           </article>
         </div>
-
       </div>
     </section>
   );
