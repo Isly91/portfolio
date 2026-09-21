@@ -1,0 +1,11 @@
+project/.git/
+project/.gitignore
+project/obj/
+project/webserv
+project/README*.md
+project/run.sh
+project/*.o
+project/*.a
+.DS_Store
+.git/
+node_modules/

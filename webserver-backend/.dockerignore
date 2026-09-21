@@ -1,0 +1,9 @@
+.git/
+.gitignore
+README*.md
+run.sh
+*.o
+*.a
+.DS_Store
+node_modules/
+package-lock.json
