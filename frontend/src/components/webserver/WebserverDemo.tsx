@@ -105,24 +105,22 @@ export default function WebserverDemo() {
       sendRequest();
     }
   }
+
   const htmlPreview =
     response?.body
-      // src="/img/file.jpg"
       .replace(
         /src="\/([^"]+)"/g,
         `src="${API}/api/webserver/file/${session}/$1"`
       )
-      // src="styles.css", scripts.js, img/file.jpg
       .replace(
         /src="([^"/][^"]*)"/g,
         `src="${API}/api/webserver/file/${session}/www/$1"`
       )
-      // href="/styles.css"
+
       .replace(
         /href="\/([^"]+)"/g,
         `href="${API}/api/webserver/file/${session}/$1"`
       )
-      // href="styles.css"
       .replace(
         /href="([^"/][^"]*)"/g,
         `href="${API}/api/webserver/file/${session}/www/$1"`

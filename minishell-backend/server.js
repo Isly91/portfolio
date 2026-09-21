@@ -84,7 +84,6 @@ async function createSession() {
     "--network", "none",
     "--memory", "128m",
     "--memory-swap", "128m",
-    "--pids-limit", "64",
     "--read-only",
     "--tmpfs", "/tmp:rw,nosuid,nodev,noexec,size=16m",
     "--cap-drop", "ALL",

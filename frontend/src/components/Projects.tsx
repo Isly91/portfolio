@@ -82,6 +82,23 @@ export default function Projects() {
               technical challenge.
             </p>
           </div>
+          {/* intro projects */}
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+            {[
+                { value: "23+", label: "Projects built" },
+                { value: "42", label: "Codam projects completed" },
+                { value: "3", label: "Interactive demos" },
+                { value: "C -> React", label: "Systems to Full-Stack" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="rounded-2xl border border-gray-800 bg-gray-900/60 p-5 text-center transition hover:border-cyan-500/40 hover:bg-gray-900"
+              >
+                <p className="text-3xl font-bold text-cyan-400">{item.value}</p>
+                <p className="mt-2 text-sm text-gray-400">{item.label}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Minishell */}
