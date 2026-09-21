@@ -12,6 +12,7 @@ type ResponseData = {
 
 export default function WebserverDemo() {
   const [session, setSession] = useState("");
+  const [initialized, setInitialized] = useState(false);
   const [path, setPath] = useState("/www/");
   const [method, setMethod] = useState("GET");
   const [response, setResponse] = useState<ResponseData | null>(null);
@@ -47,8 +48,11 @@ export default function WebserverDemo() {
   }, []);
 
   useEffect(() => {
+    if (initialized) return;
+
+    setInitialized(true);
     createSession();
-  }, [createSession]);
+  }, [initialized, createSession]);
 
   useEffect(() => {
     return () => {
@@ -101,6 +105,33 @@ export default function WebserverDemo() {
       sendRequest();
     }
   }
+  const htmlPreview =
+    response?.body
+      // src="/img/file.jpg"
+      .replace(
+        /src="\/([^"]+)"/g,
+        `src="${API}/api/webserver/file/${session}/$1"`
+      )
+      // src="styles.css", scripts.js, img/file.jpg
+      .replace(
+        /src="([^"/][^"]*)"/g,
+        `src="${API}/api/webserver/file/${session}/www/$1"`
+      )
+      // href="/styles.css"
+      .replace(
+        /href="\/([^"]+)"/g,
+        `href="${API}/api/webserver/file/${session}/$1"`
+      )
+      // href="styles.css"
+      .replace(
+        /href="([^"/][^"]*)"/g,
+        `href="${API}/api/webserver/file/${session}/www/$1"`
+      ) ?? "";
+  
+  const contentType =
+  response?.headers["content-type"] ||
+  response?.headers["Content-Type"] ||
+  "";
 
   return (
     <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950 text-white shadow-2xl">
@@ -154,6 +185,7 @@ export default function WebserverDemo() {
             className="min-w-0 flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm outline-none transition focus:border-blue-500 disabled:opacity-50"
             placeholder="/www/"
           />
+          
 
           <button
             onClick={sendRequest}
@@ -223,15 +255,29 @@ export default function WebserverDemo() {
                   .join("\n")}
               </pre>
             </div>
-
+            
             <div className="rounded-xl border border-zinc-800 bg-black/40 p-4">
               <p className="mb-3 font-mono text-xs text-zinc-500">
-                BODY
+                BODY PREVIEW
               </p>
-
-              <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-6 text-zinc-300">
-                {response.body}
-              </pre>
+              {contentType.includes("text/html") ? (
+                <iframe
+                  title="Webserver Preview"
+                  srcDoc={htmlPreview}
+                  className="h-[450px] w-full rounded-lg bg-white"
+                  sandbox="allow-scripts allow-same-origin"
+                />
+              ) : contentType.startsWith("image/") ? (
+                <img
+                  src={`data:${contentType};base64,${response.body}`}
+                  alt="Webserver response"
+                  className="max-h-[450px] w-full object-contain rounded-lg border border-zinc-700"
+                />
+              ) : (
+                <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-6 text-zinc-300">
+                  {response.body}
+                </pre>
+              )}
             </div>
           </>
         )}

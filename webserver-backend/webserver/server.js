@@ -54,19 +54,43 @@ app.post('/api/webserver/request/:id', async (req,res)=>{
   const method=req.body.method || 'GET';
   const path=req.body.path || '/';
 
-  const response=await fetch(`http://host.docker.internal:${s.port}${path}`,{
-    method
-  });
+  const response = await fetch(
+    `http://host.docker.internal:${s.port}${path}`,
+    { method }
+  );
 
-  const body=await response.text();
+  const headers = Object.fromEntries(response.headers.entries());
+  const contentType = headers["content-type"] || "";
 
+  const buffer = Buffer.from(await response.arrayBuffer());
   res.json({
-    status:response.status,
-    headers:Object.fromEntries(response.headers.entries()),
-    body
+    status: response.status,
+    headers,
+    body: contentType.startsWith("image/")
+      ? buffer.toString("base64")
+      : buffer.toString("utf8"),
   });
 });
 
+app.get('/api/webserver/file/:id/*path', async (req, res) => {
+  const s = sessions.get(req.params.id);
+  if (!s) return res.sendStatus(404);
+
+  const filePath = "/" + req.params.path;
+
+  const response = await fetch(
+    `http://host.docker.internal:${s.port}${filePath}`
+  );
+
+const buffer = Buffer.from(await response.arrayBuffer());
+
+  res.setHeader(
+    "Content-Type",
+    response.headers.get("content-type") || "application/octet-stream"
+  );
+
+  res.send(buffer);
+});
 app.delete('/api/webserver/session/:id', async(req,res)=>{
   const s=sessions.get(req.params.id);
   if(s){
