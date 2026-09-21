@@ -172,7 +172,6 @@ export default function WebserverDemo() {
             className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm outline-none transition focus:border-blue-500 disabled:opacity-50"
           >
             <option>GET</option>
-            <option>POST</option>
             <option>DELETE</option>
           </select>
 
