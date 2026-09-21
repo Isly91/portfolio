@@ -611,14 +611,8 @@ export default function TranscendenceGame({ difficulty }: Props) {
   return (
     <div
       ref={boardRef}
-      className="relative h-[100svh] min-h-0 w-full max-w-[1400px] overflow-hidden bg-black text-white md:mx-auto"
+      className="relative h-full w-full overflow-hidden bg-black text-white"
     >
-		<button
-		  onClick={() => router.push("/#projects")}
-		  aria-label="Back to portfolio"
-		  className="absolute left-6 top-6 z-50 flex h-11 w-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-xl text-white backdrop-blur-md transition hover:bg-white hover:text-black">
-		  ←
-		</button>
 
       {/* GAME FIELD */}
 

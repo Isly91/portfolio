@@ -1,5 +1,9 @@
+"use client";
+
+import { useState } from "react";
 import InteractiveTerminal from "../components/minishell/InteractiveTerminal";
 import WebserverDemo from "./webserver/WebserverDemo";
+import TranscendenceGame from "../components/transcendence/TranscendenceGame";
 
 const projects = [
   {
@@ -45,6 +49,7 @@ const projects = [
 ];
 
 export default function Projects() {
+  const [playTranscendence, setPlayTranscendence] = useState(false);
   return (
     <section
       id="projects"
@@ -201,6 +206,82 @@ export default function Projects() {
           </div>
         </div>
 
+        {/* ---------------------- Transcendence ---------------------- */}
+        <div className="mb-12 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-b from-gray-900 to-black text-white shadow-2xl transition-all duration-300 hover:border-blue-400/50 hover:shadow-blue-500/10">
+          <div className="p-8 md:p-10 lg:p-12">
+            <div className="mb-8 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+              <div>
+                <span className="inline-block rounded-full border border-purple-500/30 bg-gradient-to-r from-purple-500/20 to-blue-500/20 px-3 py-1 text-xs font-semibold text-purple-300">
+                  Featured · Full-Stack Multiplayer
+                </span>
+
+                <h3 className="mt-6 text-3xl font-bold tracking-tight md:text-4xl">
+                  Transcendence
+                </h3>
+
+                <p className="mt-4 max-w-3xl text-base leading-8 text-gray-300 md:text-lg">
+                  A real-time multiplayer Pong game built during the 42/Codam curriculum.
+                  Features authentication, matchmaking, WebSockets, game physics,
+                  PostgreSQL, Docker and a complete frontend/backend architecture.
+                </p>
+
+                <div className="mt-6 flex flex-wrap gap-2">
+                  {[
+                    "TypeScript",
+                    "React",
+                    "NestJS",
+                    "WebSockets",
+                    "PostgreSQL",
+                    "Docker",
+                  ].map((tech) => (
+                    <span
+                      key={tech}
+                      className="rounded-full border border-purple-500/30 bg-gradient-to-r from-purple-500/20 to-blue-500/20 px-3 py-1 text-xs font-medium text-purple-300"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+                
+              <a
+                href="https://github.com/Isly91/Transcendence"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex shrink-0 items-center gap-2 rounded-full border border-gray-700 px-5 py-2.5 text-sm font-semibold text-gray-300 transition-all duration-300 hover:border-purple-400 hover:text-white"
+              >
+                View on GitHub →
+              </a>
+            </div>
+                
+            <div className="overflow-hidden rounded-2xl border border-gray-800 bg-black">
+              {!playTranscendence ? (
+                <div className="relative aspect-video">
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <button
+                      onClick={() => setPlayTranscendence(true)}
+                      className="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-8 py-4 text-lg font-bold text-white shadow-lg transition hover:scale-105 hover:shadow-purple-500/40"
+                    >
+                      ▶ Play Demo
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="relative h-[700px] bg-black">
+                  <button
+                    onClick={() => setPlayTranscendence(false)}
+                    className="absolute left-4 top-4 z-50 rounded-full border border-white/20 bg-black/60 px-4 py-2 text-sm text-white backdrop-blur transition hover:bg-white hover:text-black"
+                  >
+                    ← Back to Preview
+                  </button>
+              
+                  <TranscendenceGame difficulty="easy" />
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Other Projects */}
         <div className="grid gap-6 md:grid-cols-2">
           {projects.map((project) => (
@@ -247,60 +328,7 @@ export default function Projects() {
             </article>
           ))}
 
-          {/* Transcendence */}
-          <article className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 md:p-10">
-            <div className="inline-flex w-fit">
-              <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-                Full-Stack Web
-              </span>
-            </div>
-
-            <h3 className="mt-4 text-2xl font-bold text-gray-900">
-              Transcendence
-            </h3>
-
-            <p className="mt-4 flex-grow text-base leading-7 text-gray-600">
-              A real-time multiplayer web application combining frontend,
-              backend, authentication, game logic and deployment.
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {[
-                "TypeScript",
-                "React",
-                "Node.js",
-                "WebSockets",
-                "Docker",
-              ].map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-3 py-1 text-xs font-semibold text-blue-700 transition-all duration-300 group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white"
-                >
-                  {tech}
-                </span>
-              ))}
-            </div>
-
-            <div className="mt-8 flex gap-3 border-t border-gray-200 pt-6">
-              <a
-                href="/projects/transcendence"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition-all duration-300 hover:gap-3 hover:text-blue-600"
-              >
-                Play demo
-                <span>→</span>
-              </a>
-
-              <a
-                href="https://github.com/Isly91/Transcendence"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition-all duration-300 hover:gap-3 hover:text-blue-600"
-              >
-                View on GitHub
-                <span>→</span>
-              </a>
-            </div>
-          </article>
+          
         </div>
       </div>
     </section>
