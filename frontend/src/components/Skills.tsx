@@ -1,95 +1,121 @@
+import { ArrowUpRight } from "lucide-react";
+
 export default function Skills() {
   const skills = [
     {
-      title: "Systems",
-      icon: "⚙️",
+      title: "Systems Programming",
       description:
-        "Low-level programming, memory management and system-oriented development.",
+        "Building software close to the operating system with a focus on memory management, networking, concurrency and low-level performance.",
       technologies: ["C", "C++", "Linux", "Unix", "Bash"],
-      gradient: "from-orange-500 to-red-500",
     },
     {
-      title: "Backend",
-      icon: "🔧",
+      title: "Backend Engineering",
       description:
-        "Designing scalable APIs, databases and server-side applications.",
+        "Designing APIs, databases and scalable server-side applications using TypeScript, Fastify and Prisma.",
       technologies: ["Node.js", "TypeScript", "Fastify", "Prisma", "SQLite"],
-      gradient: "from-green-500 to-emerald-500",
     },
     {
-      title: "Frontend",
-      icon: "✨",
+      title: "Frontend Development",
       description:
-        "Building modern, responsive and interactive web applications.",
-      technologies: ["React", "Next.js", "Vite", "Tailwind CSS", "JavaScript"],
-      gradient: "from-blue-500 to-cyan-500",
+        "Crafting responsive interfaces with React, Next.js and performance-first architecture.",
+      technologies: ["React", "Next.js", "Tailwind CSS", "Vite"],
     },
     {
       title: "Infrastructure",
-      icon: "🚀",
       description:
-        "Containerization, deployment and development environments.",
+        "Containerized development environments, networking, reverse proxies and reproducible deployment workflows.",
       technologies: ["Docker", "Docker Compose", "Nginx", "Git"],
-      gradient: "from-purple-500 to-pink-500",
     },
   ];
 
   return (
-    <section id="skills" className="relative px-6 py-24 md:px-8 md:py-32">
-      {/* Background Elements */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-0 top-1/2 h-96 w-96 rounded-full bg-gradient-to-br from-blue-200/20 to-transparent blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-gradient-to-tl from-purple-200/20 to-transparent blur-3xl" />
-      </div>
-
+    <section
+      id="skills"
+      className="border-t border-zinc-200 bg-[#FAFAF9] px-6 py-40 md:px-12"
+    >
       <div className="mx-auto max-w-7xl">
-        <div className="space-y-4 mb-12">
-          <span className="inline-block rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-1.5 text-sm font-semibold text-blue-700">
-            Technical Skills
-          </span>
+        {/* Header */}
+        <div className="mb-32 max-w-4xl space-y-8">
+          <p className="text-xs uppercase tracking-[0.35em] text-zinc-500">
+            Skills
+          </p>
 
-          <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
-            Tools & technologies
+          <h2 className="text-6xl font-semibold leading-[0.95] tracking-[-0.03em] text-zinc-900 md:text-7xl">
+            Technologies behind
             <br />
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              I use to build.
-            </span>
+            every project.
           </h2>
+
+          <p className="max-w-2xl text-xl leading-9 text-zinc-600">
+            I enjoy working across the entire software stack — from systems
+            programming in C and C++ to scalable backend services, modern React
+            applications and Docker-based infrastructure.
+          </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
-          {skills.map((skill) => (
-            <div
-              key={skill.title}
-              className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-blue-300 hover:shadow-xl md:p-10"
-            >
-              {/* Background gradient on hover */}
-              <div className={`absolute inset-0 -z-10 bg-gradient-to-br ${skill.gradient} opacity-0 transition-opacity duration-300 group-hover:opacity-5`} />
+        {/* Skills List */}
+        <div className="space-y-5">
+  {skills.map((skill) => (
+    <article
+      key={skill.title}
+      className="group rounded-3xl border border-zinc-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-lg"
+    >
+      <div className="grid gap-8 md:grid-cols-[240px_1fr] md:items-start">
+        {/* Left */}
+        <div className="flex items-center justify-between">
+          <h3 className="text-xl font-semibold tracking-tight text-zinc-900">
+            {skill.title}
+          </h3>
 
-              {/* Icon */}
-              <div className="text-4xl mb-4">{skill.icon}</div>
+          <ArrowUpRight className="h-5 w-5 text-zinc-400 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-zinc-900" />
+        </div>
 
-              {/* Title */}
-              <h3 className="text-2xl font-bold text-gray-900">
-                {skill.title}
-              </h3>
+        {/* Right */}
+        <div className="space-y-8">
+          <p className="max-w-2xl text-lg leading-9 text-zinc-600">
+            {skill.description}
+          </p>
 
-              {/* Description */}
-              <p className="mt-3 text-base leading-6 text-gray-600">
-                {skill.description}
+          <div className="flex flex-wrap gap-2">
+            {skill.technologies.map((technology) => (
+              <span
+                key={technology}
+                className="rounded-full border border-zinc-300 bg-zinc-50 px-3 py-1.5 text-xs uppercase tracking-[0.12em] text-zinc-700 transition-colors duration-300 group-hover:border-zinc-900 group-hover:bg-zinc-900 group-hover:text-white"
+              >
+                {technology}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </article>
+  ))}
+</div>
+
+        {/* Bottom Summary */}
+        <div className="mt-32 grid gap-12 border-t border-zinc-200 pt-12 md:grid-cols-3">
+          {[
+            {
+              label: "Languages",
+              value: "C · C++ · TypeScript · JavaScript · SQL",
+            },
+            {
+              label: "Frameworks",
+              value: "React · Next.js · Fastify · Prisma",
+            },
+            {
+              label: "Infrastructure",
+              value: "Docker · Nginx · Linux · Git",
+            },
+          ].map((item) => (
+            <div key={item.label} className="space-y-4">
+              <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
+                {item.label}
               </p>
 
-              {/* Technologies */}
-              <div className="mt-6 flex flex-wrap gap-2">
-                {skill.technologies.map((technology) => (
-                  <span
-                    key={technology}
-                    className={`rounded-full bg-gradient-to-r ${skill.gradient} px-3 py-1 text-xs font-semibold text-white opacity-80 transition-opacity duration-200 group-hover:opacity-100`}
-                  >
-                    {technology}
-                  </span>
-                ))}
-              </div>
+              <p className="text-lg leading-8 text-zinc-900">
+                {item.value}
+              </p>
             </div>
           ))}
         </div>

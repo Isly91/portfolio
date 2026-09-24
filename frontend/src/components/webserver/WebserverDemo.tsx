@@ -202,7 +202,10 @@ export default function WebserverDemo() {
         </div>
 
         <p className="mt-2 font-mono text-xs text-zinc-600">
-          Try: / · /www/ · /img/ · /test/
+          Try GET: /www/ · /img/ · /test/
+        </p>
+        <p className="mt-2 font-mono text-xs text-zinc-600">
+          Try DELETE /www/ and then GET /www/
         </p>
       </div>
 

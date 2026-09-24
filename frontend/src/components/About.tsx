@@ -2,74 +2,86 @@ import Image from "next/image";
 
 export default function About() {
   return (
-    <section id="about" className="relative px-6 py-24 md:px-8 md:py-32">
-      {/* Background Elements */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute right-0 top-1/3 h-80 w-80 rounded-full bg-gradient-to-bl from-blue-200/30 to-transparent blur-3xl" />
-      </div>
-
-      <div className="mx-auto grid max-w-7xl items-center gap-12 lg:gap-16 lg:grid-cols-2">
-        {/* Photo */}
+    <section
+      id="about"
+      className="border-t border-zinc-200 bg-white px-6 py-32 md:px-12"
+    >
+      <div className="group mx-auto grid max-w-7xl items-center gap-24 lg:grid-cols-[0.9fr_1.1fr]">
+        {/* Portrait */}
         <div className="flex justify-center lg:justify-start">
-          <div className="group relative">
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 opacity-0 transition-opacity duration-500 group-hover:opacity-100 blur-xl" />
-            <div className="relative overflow-hidden rounded-2xl shadow-xl">
-              <Image
-                src="/ibehluli.jpg"
-                alt="Isly — Software Engineer"
-                width={500}
-                height={600}
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-            </div>
+          <div className="overflow-hidden rounded-[36px] bg-zinc-100">
+            <Image
+              src="/ibehluli.jpg"
+              alt="Isly — Software Engineer"
+              width={520}
+              height={650}
+              priority
+              className="h-auto w-full object-cover grayscale brightness-95 contrast-110 transition-all duration-700 group-hover:grayscale-0 group-hover:brightness-100 group-hover:contrast-100 group-hover:scale-[1.01]" />
           </div>
         </div>
 
         {/* Content */}
-        <div className="space-y-8">
-          <div>
-            <span className="inline-block rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-1.5 text-sm font-semibold text-blue-700">
-              About me
-            </span>
-          </div>
+        <div className="space-y-10">
+          <p className="text-xs uppercase tracking-[0.35em] text-zinc-500">
+            About
+          </p>
 
-          <div className="space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
-              I turn ideas into
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                elegant software
+          <h2 className="text-5xl font-semibold leading-tight tracking-tight text-zinc-900 md:text-6xl">
+            I build software
+            <br />
+            from the operating system
+            <br />
+            to the user interface.
+          </h2>
+
+          <div className="space-y-7 text-lg leading-9 text-zinc-600">
+            <p>
+              I enjoy understanding how software works beneath the surface and
+              building systems that are simple, reliable and efficient.
+            </p>
+
+            <p>
+              I graduated from{" "}
+              <span className="font-medium text-zinc-900">
+                Codam (42 Network) in Amsterdam
               </span>
-            </h2>
-          </div>
-
-          <div className="space-y-6 text-base leading-8 text-gray-600 md:text-lg">
-            <p>
-              I'm a software engineer passionate about understanding how things work at the deepest level and building them from scratch with purpose.
+              , where I developed a strong foundation in C, C++, networking,
+              algorithms and operating systems through project-based learning.
             </p>
 
             <p>
-              I completed my software engineering education at <span className="font-semibold text-gray-900">Codam in Amsterdam</span>, where I worked extensively with C and C++ and developed a strong foundation in algorithms, systems programming, and problem-solving.
-            </p>
-
-            <p>
-              Today, I leverage modern technologies like <span className="font-semibold text-gray-900">TypeScript, React, Node.js, and Docker</span> to architect full-stack applications and digital products that scale.
+              Today I design and build full-stack applications using{" "}
+              <span className="font-medium text-zinc-900">
+                TypeScript, React, Node.js and Docker
+              </span>
+              , while continuing to deepen my knowledge of backend architecture
+              and systems programming.
             </p>
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-2 gap-8 pt-8 md:grid-cols-3">
-            <div>
-              <div className="text-2xl font-bold text-blue-600 md:text-3xl">42</div>
-              <div className="text-sm text-gray-600">Projects completed</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600 md:text-3xl">5+</div>
-              <div className="text-sm text-gray-600">Years learning</div>
-            </div>
-            <div>
-              <div className="text-2xl font-bold text-blue-600 md:text-3xl">∞</div>
-              <div className="text-sm text-gray-600">Always growing</div>
+          {/* Divider */}
+          <div className="border-t border-zinc-200 pt-10">
+            <div className="grid grid-cols-3 gap-8">
+              <div>
+                <p className="text-3xl font-semibold text-zinc-900">42</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">
+                  Codam Network
+                </p>
+              </div>
+
+              <div>
+                <p className="text-3xl font-semibold text-zinc-900">20+</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">
+                  Engineering Projects
+                </p>
+              </div>
+
+              <div>
+                <p className="text-3xl font-semibold text-zinc-900">C / C++</p>
+                <p className="mt-2 text-sm leading-6 text-zinc-500">
+                  Systems Programming
+                </p>
+              </div>
             </div>
           </div>
         </div>

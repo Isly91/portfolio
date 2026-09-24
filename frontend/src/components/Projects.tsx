@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowUpRight } from "lucide-react";
 import { useState } from "react";
 import InteractiveTerminal from "../components/minishell/InteractiveTerminal";
 import WebserverDemo from "./webserver/WebserverDemo";
@@ -37,15 +38,7 @@ const projects = [
       "A custom implementation of the printf function, designed to reproduce formatted output and handle variadic arguments.",
     technologies: ["C", "Variadic Functions"],
     github: "https://github.com/Isly91/ft_printf",
-  },
-  {
-    title: "libasm",
-    category: "Assembly",
-    description:
-      "A low-level programming project implementing standard C library functions using x86-64 assembly.",
-    technologies: ["Assembly", "x86-64", "Linux"],
-    github: "https://github.com/Isly91/libasm",
-  },
+  }
 ];
 
 export default function Projects() {
@@ -55,51 +48,47 @@ export default function Projects() {
       id="projects"
       className="relative px-6 py-24 md:px-8 md:py-32"
     >
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute bottom-0 left-1/4 h-96 w-96 rounded-full bg-gradient-to-tr from-blue-200/20 to-transparent blur-3xl" />
-        <div className="absolute right-0 top-1/3 h-96 w-96 rounded-full bg-gradient-to-bl from-purple-200/20 to-transparent blur-3xl" />
-      </div>
-
       <div className="mx-auto max-w-7xl">
         {/* Header */}
-        <div className="mb-12 space-y-4">
-          <span className="inline-block rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-1.5 text-sm font-semibold text-blue-700">
-            Featured Work
-          </span>
+        <div className="space-y-8">
+        <h1 className="text-6xl md:text-8xl font-semibold leading-[0.92] tracking-tight">
+          Building software
+          <br />
+          with precision.
+        </h1>
 
-          <div className="max-w-3xl space-y-4">
-            <h2 className="text-4xl font-bold tracking-tight md:text-5xl">
-              Projects &
-              <br />
-              <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                Achievements
-              </span>
-            </h2>
+        <p className="max-w-xl mb-16 text-xl leading-9 text-zinc-600">
+          Full-stack software engineer focused on backend systems,
+          networking, C++, Docker and modern web applications.
+        </p>
+      </div>
 
-            <p className="text-lg leading-8 text-gray-600">
-              From low-level systems programming and algorithms to full-stack
-              applications. Each project represents a learning opportunity and
-              technical challenge.
-            </p>
-          </div>
-          {/* intro projects */}
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            {[
-                { value: "23+", label: "Projects built" },
-                { value: "42", label: "Codam projects completed" },
-                { value: "3", label: "Interactive demos" },
-                { value: "C -> React", label: "Systems to Full-Stack" },
-            ].map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-gray-800 bg-gray-900/60 p-5 text-center transition hover:border-cyan-500/40 hover:bg-gray-900"
-              >
-                <p className="text-3xl font-bold text-cyan-400">{item.value}</p>
-                <p className="mt-2 text-sm text-gray-400">{item.label}</p>
-              </div>
-            ))}
-          </div>
+      {/* Summary */}
+      <div className="mb-32 border-y border-zinc-200">
+        <div className="grid md:grid-cols-4">
+          {[
+            { value: "20+", label: "Projects built" },
+            { value: "C / C++", label: "Systems programming" },
+            { value: "TypeScript", label: "Backend & Frontend engineering" },
+            { value: "Docker", label: "Interactive development environments" },
+          ].map((item, index) => (
+            <div
+              key={item.label}
+              className={`px-8 py-12 ${
+                index !== 3 ? "md:border-r md:border-zinc-200" : ""
+              }`}
+            >
+              <p className="text-3xl font-semibold tracking-tight text-zinc-900">
+                {item.value}
+              </p>
+            
+              <p className="mt-3 text-sm leading-6 text-zinc-500">
+                {item.label}
+              </p>
+            </div>
+          ))}
         </div>
+      </div>
 
         {/* Minishell */}
         <div className="mb-12 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-b from-gray-900 to-black text-white shadow-2xl transition-all duration-300 hover:border-blue-400/50 hover:shadow-blue-500/10">
@@ -194,7 +183,6 @@ export default function Projects() {
                     "poll()",
                     "CGI",
                     "HTTP/1.1",
-                    "Docker",
                   ].map((tech) => (
                     <span
                       key={tech}
@@ -238,17 +226,19 @@ export default function Projects() {
 
                 <p className="mt-4 max-w-3xl text-base leading-8 text-gray-300 md:text-lg">
                   A real-time multiplayer Pong game built during the 42/Codam curriculum.
-                  Features authentication, matchmaking, WebSockets, game physics,
-                  PostgreSQL, Docker and a complete frontend/backend architecture.
+                  Features authentication, structural database design, matchmaking, WebSockets, game physics,
+                  SQLite, Docker and a complete frontend/backend architecture.
                 </p>
 
                 <div className="mt-6 flex flex-wrap gap-2">
                   {[
+                    "Fatify",
                     "TypeScript",
+                    "SQLite",
+                    "Prisma",
                     "React",
-                    "NestJS",
+                    "TailwindCSS",
                     "WebSockets",
-                    "PostgreSQL",
                     "Docker",
                   ].map((tech) => (
                     <span
@@ -298,54 +288,108 @@ export default function Projects() {
             </div>
           </div>
         </div>
+        {/* More Projects */}
+        <div className="mt-32 border-t border-zinc-200 pt-24">
+          {/* Header */}
+          <div className="mb-20 max-w-3xl space-y-5">
+            <p className="text-xs uppercase tracking-[0.35em] text-zinc-500">
+              More Projects
+            </p>
 
-        {/* Other Projects */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {projects.map((project) => (
-            <article
-              key={project.title}
-              className="group flex flex-col rounded-2xl border border-gray-200 bg-white p-8 transition-all duration-300 hover:border-blue-300 hover:shadow-xl hover:shadow-blue-500/10 md:p-10"
-            >
-              <div className="inline-flex w-fit">
-                <span className="text-xs font-bold uppercase tracking-widest text-blue-600">
-                  {project.category}
-                </span>
-              </div>
+            <h3 className="text-5xl font-semibold leading-[0.95] tracking-[-0.02em] text-zinc-900">
+              Systems programming
+              <br />
+              fundamentals.
+            </h3>
 
-              <h3 className="mt-4 text-2xl font-bold text-gray-900">
-                {project.title}
-              </h3>
+            <p className="text-lg leading-8 text-zinc-600">
+              Projects completed during Codam, focused on algorithms, operating systems,
+              concurrency and graphics programming.
+            </p>
+          </div>
 
-              <p className="mt-4 flex-grow text-base leading-7 text-gray-600">
-                {project.description}
-              </p>
+          {/* Projects */}
+          <div className="space-y-6">
+            {projects.map((project) => (
+              <a
+                key={project.title}
+                href={project.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group block rounded-3xl border border-zinc-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-lg"
+              >
+                <div className="grid gap-8 md:grid-cols-[220px_1fr]">
+                  {/* Left */}
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
+                      {project.category}
+                    </p>
+                  </div>
+            
+                  {/* Right */}
+                  <div className="space-y-6">
+                    {/* Title + Arrow */}
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-3xl font-semibold tracking-tight text-zinc-900">
+                        {project.title}
+                      </h4>
+            
+                      <ArrowUpRight className="h-6 w-6 text-zinc-400 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-zinc-900" />
+                    </div>
+            
+                    <p className="max-w-2xl text-lg leading-8 text-zinc-600">
+                      {project.description}
+                    </p>
+            
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech) => (
+                        <span
+                          key={tech}
+                          className="rounded-full border border-zinc-200 bg-zinc-50 px-3 py-1.5 text-xs uppercase tracking-[0.12em] text-zinc-700 transition-all duration-300 group-hover:border-zinc-900 group-hover:bg-zinc-900 group-hover:text-white"
+                        >
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    
+                    <div className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 transition-colors duration-300 group-hover:text-zinc-900">
+                      <span>View source</span>
+                      <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                    </div>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+<div className="mt-6">
+  <a
+    href="https://github.com/Isly91"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="group block rounded-3xl border border-zinc-200 bg-white p-8 transition-all duration-300 hover:-translate-y-1 hover:border-zinc-300 hover:shadow-lg"
+  >
+    <div className="flex items-center justify-between">
+      <div className="space-y-3">
+        <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
+          More on GitHub
+        </p>
 
-              <div className="mt-6 flex flex-wrap gap-2">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-3 py-1 text-xs font-semibold text-blue-700 transition-all duration-300 group-hover:from-blue-600 group-hover:to-purple-600 group-hover:text-white"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
+        <h3 className="text-3xl font-semibold tracking-tight text-zinc-900">
+          Other Projects
+        </h3>
 
-              <div className="mt-8 border-t border-gray-200 pt-6">
-                <a
-                  href={project.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition-all duration-300 hover:gap-3 hover:text-blue-600"
-                >
-                  View on GitHub
-                  <span>→</span>
-                </a>
-              </div>
-            </article>
-          ))}
+        <p className="max-w-xl text-lg leading-8 text-zinc-600">
+          Explore additional projects, experiments and coding challenges on my
+          GitHub profile.
+        </p>
+      </div>
 
-          
+      <span className="text-3xl text-zinc-400 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-zinc-900">
+        ↗
+      </span>
+    </div>
+  </a>
+</div>
         </div>
       </div>
     </section>

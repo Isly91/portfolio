@@ -1,98 +1,89 @@
+import { ArrowUpRight } from "lucide-react";
+
 export default function Contact() {
+  const links = [
+    {
+      label: "Email",
+      value: "behlulistudio@gmail.com",
+      href: "mailto:behlulistudio@gmail.com",
+    },
+    {
+      label: "GitHub",
+      value: "github.com/Isly91",
+      href: "https://github.com/Isly91",
+    },
+    {
+      label: "LinkedIn",
+      value: "linkedin.com/in/islybeh",
+      href: "https://www.linkedin.com/in/islybeh/",
+    },
+  ];
+
   return (
     <section
       id="contact"
-      className="relative overflow-hidden bg-white px-6 py-32 md:px-8"
+      className="border-t border-zinc-200 bg-[#F7F7F5] px-6 py-32 md:px-12"
     >
-      {/* Background */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute left-1/4 top-20 h-96 w-96 rounded-full bg-blue-400/10 blur-3xl" />
-        <div className="absolute right-1/4 bottom-0 h-96 w-96 rounded-full bg-purple-400/10 blur-3xl" />
-      </div>
-
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-20 lg:grid-cols-[1.2fr_0.8fr]">
           {/* Left */}
-          <div>
-            <span className="mb-6 inline-block rounded-full bg-gradient-to-r from-blue-100 to-purple-100 px-4 py-1.5 text-sm font-semibold text-blue-700">
-              Get in touch
-            </span>
-
-            <h2 className="text-4xl font-bold tracking-tight md:text-6xl">
-              Let's build
-              <span className="block bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                something great.
-              </span>
-            </h2>
-
-            <p className="mt-6 max-w-xl text-lg leading-8 text-gray-600">
-              I'm currently looking for software engineering opportunities
-              where I can learn, contribute, and build meaningful products.
-              If you'd like to work together, I'd love to hear from you.
+          <div className="space-y-8">
+            <p className="text-xs uppercase tracking-[0.35em] text-zinc-500">
+              Contact
             </p>
 
-            <a
-              href="mailto:behlulistudio@gmail.com"
-              className="mt-8 inline-flex items-center rounded-full bg-gradient-to-r from-blue-600 to-purple-600 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-500/30"
-            >
-              Send me an email →
-            </a>
-          </div>
+            <h2 className="text-5xl font-semibold leading-[0.95] tracking-tight text-zinc-900 md:text-7xl">
+              Let's build
+              <br />
+              something exceptional.
+            </h2>
 
+            <p className="max-w-xl text-lg leading-9 text-zinc-600">
+              I'm looking for software engineering opportunities where I can work
+              with talented teams, build meaningful products and continue growing
+              as an engineer.
+            </p>
+          </div>
           {/* Right */}
-          <div className="space-y-4">
-            <a
-              href="mailto:behlulistudio@gmail.com"
-              className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
-            >
-              <div>
-                <p className="text-sm font-medium text-gray-500">Email</p>
-                <p className="mt-1 font-semibold text-black">
-                  behlulistudio@gmail.com
-                </p>
-              </div>
-
-              <span className="text-xl text-gray-400 transition-transform group-hover:translate-x-1">
-                →
-              </span>
-            </a>
-
-            <a
-              href="https://github.com/Isly91"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
-            >
-              <div>
-                <p className="text-sm font-medium text-gray-500">GitHub</p>
-                <p className="mt-1 font-semibold text-black">
-                  github.com/Isly91
-                </p>
-              </div>
-
-              <span className="text-xl text-gray-400 transition-transform group-hover:translate-x-1">
-                →
-              </span>
-            </a>
-
-            <a
-              href="https://www.linkedin.com/in/islybeh/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex items-center justify-between rounded-2xl border border-gray-200 bg-white p-6 transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg"
-            >
-              <div>
-                <p className="text-sm font-medium text-gray-500">LinkedIn</p>
-                <p className="mt-1 font-semibold text-black">
-                  Connect with me
-                </p>
-              </div>
-
-              <span className="text-xl text-gray-400 transition-transform group-hover:translate-x-1">
-                →
-              </span>
-            </a>
+          <div className="border-t border-zinc-200 lg:border-t-0 lg:border-l lg:pl-12">
+            <div className="space-y-4">
+              {links.map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  target={item.href.startsWith("http") ? "_blank" : undefined}
+                  rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
+                  className="group flex items-center justify-between rounded-2xl border border-transparent p-5 transition-all duration-300 hover:border-zinc-200 hover:bg-zinc-50 hover:-translate-y-0.5"
+                >
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.25em] text-zinc-500">
+                      {item.label}
+                    </p>
+              
+                    <p className="mt-2 text-lg text-zinc-900 transition-colors duration-300 group-hover:text-black">
+                      {item.value}
+                    </p>
+                  </div>
+              
+                  <ArrowUpRight className="h-5 w-5 text-zinc-400 transition-all duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-zinc-900" />
+                </a>
+              ))}
+            </div>
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-32 flex flex-col gap-6 border-t border-zinc-200 pt-8 md:flex-row md:items-center md:justify-between">
+          <div>
+            <p className="text-sm text-zinc-500">© 2026 Islam Behluli</p>
+            <p className="mt-1 text-sm text-zinc-500">
+              Designed and engineered in Amsterdam.
+            </p>
+          </div>
+
+          <p className="text-sm text-zinc-500">
+            Next.js · React · TypeScript · Tailwind CSS · Docker · Git · GitHub · Responsive Design
+          </p>
         </div>
       </div>
     </section>
