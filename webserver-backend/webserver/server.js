@@ -1,103 +1,45 @@
-import express from 'express';
-import cors from 'cors';
-import { execFile } from 'child_process';
-import fetch from 'node-fetch';
-import { randomUUID } from 'crypto';
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
-const PORT = 5000;
-const IMAGE = process.env.WEBSERVER_IMAGE || 'isly-webserver:latest';
 
-app.use(cors());
-app.use(express.json());
+const PORT = 7000;
 
-const sessions = new Map();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-function docker(args) {
-  return new Promise((resolve, reject) => {
-    execFile('docker', args, (err, stdout, stderr) => {
-      if (err) return reject(stderr || err.message);
-      resolve(stdout.trim());
-    });
-  });
-}
+const ROOT = path.join(__dirname, "project");
+const WWW = path.join(ROOT, "www");
 
-app.post('/api/webserver/session', async (_, res) => {
-  const id = randomUUID();
-  const name = `webserver-${id}`;
-  const port = 12000 + Math.floor(Math.random() * 4000);
+// -----------------------------------------------------------------------------
+// Static files
+// -----------------------------------------------------------------------------
 
-  await docker([
-    'run','-d','--rm',
-    '--name', name,
-    '--network','bridge',
-    '-p', `${port}:7000`,
-    '--memory','128m',
-    '--memory-swap','128m',
-    '--pids-limit','64',
-    '--read-only',
-    '--tmpfs','/tmp:rw,nosuid,nodev,noexec,size=16m',
-    '--cap-drop','ALL',
-    '--security-opt','no-new-privileges',
-    IMAGE
-  ]);
+app.use(express.static(WWW, { extensions: ["html"] }));
 
-  sessions.set(id,{name,port});
+// -----------------------------------------------------------------------------
+// Routes
+// -----------------------------------------------------------------------------
 
-  res.json({sessionId:id});
+app.get("/", (_, res) => {
+  res.sendFile(path.join(WWW, "index.html"));
 });
 
-app.post('/api/webserver/request/:id', async (req,res)=>{
-  const s=sessions.get(req.params.id);
-  if(!s) return res.sendStatus(404);
+app.get("*", (req, res) => {
+  const file = path.join(WWW, req.path);
 
-  const method=req.body.method || 'GET';
-  const path=req.body.path || '/';
-
-  const response = await fetch(
-    `http://host.docker.internal:${s.port}${path}`,
-    { method }
-  );
-
-  const headers = Object.fromEntries(response.headers.entries());
-  const contentType = headers["content-type"] || "";
-
-  const buffer = Buffer.from(await response.arrayBuffer());
-  res.json({
-    status: response.status,
-    headers,
-    body: contentType.startsWith("image/")
-      ? buffer.toString("base64")
-      : buffer.toString("utf8"),
+  res.sendFile(file, (err) => {
+    if (err) {
+      res.status(404).send("404 Not Found");
+    }
   });
 });
 
-app.get('/api/webserver/file/:id/*path', async (req, res) => {
-  const s = sessions.get(req.params.id);
-  if (!s) return res.sendStatus(404);
+// -----------------------------------------------------------------------------
+// Start
+// -----------------------------------------------------------------------------
 
-  const filePath = "/" + req.params.path;
-
-  const response = await fetch(
-    `http://host.docker.internal:${s.port}${filePath}`
-  );
-
-const buffer = Buffer.from(await response.arrayBuffer());
-
-  res.setHeader(
-    "Content-Type",
-    response.headers.get("content-type") || "application/octet-stream"
-  );
-
-  res.send(buffer);
+app.listen(PORT, () => {
+  console.log(`Sandbox webserver running on http://127.0.0.1:${PORT}`);
 });
-app.delete('/api/webserver/session/:id', async(req,res)=>{
-  const s=sessions.get(req.params.id);
-  if(s){
-    await docker(['rm','-f',s.name]);
-    sessions.delete(req.params.id);
-  }
-  res.sendStatus(204);
-});
-
-app.listen(PORT,()=>console.log(`Webserver backend on ${PORT}`));

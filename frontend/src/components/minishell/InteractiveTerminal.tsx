@@ -5,10 +5,12 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
-const API_URL = "http://localhost:4000";
+const WS_URL =
+  process.env.NEXT_PUBLIC_MINISHELL_WS ??
+  "ws://localhost:4000/api/minishell/ws";
 
 export default function InteractiveTerminal() {
-  const terminalRef = useRef<HTMLDivElement | null>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!terminalRef.current) return;
@@ -29,75 +31,64 @@ export default function InteractiveTerminal() {
     terminal.open(terminalRef.current);
     fitAddon.fit();
 
-    let socket: WebSocket | null = null;
-    let sessionId: string | null = null;
-    let disposed = false;
+    terminal.writeln("\x1b[90mStarting Minishell container...\x1b[0m");
 
-    const startSession = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/minishell/session`, {
-          method: "POST",
-        });
+    const socket = new WebSocket(WS_URL);
 
-        if (!response.ok) {
-          throw new Error("Failed to create Minishell session");
-        }
+    let isReady = false;
 
-        const data = await response.json();
+    socket.addEventListener("open", () => {
+      socket.send(
+        JSON.stringify({
+          type: "resize",
+          cols: terminal.cols,
+          rows: terminal.rows,
+        }),
+      );
+    });
 
-        if (disposed) return;
+    socket.addEventListener("message", (event) => {
+      const message = JSON.parse(event.data);
 
-        sessionId = data.sessionId;
+      switch (message.type) {
+        case "ready":
+          isReady = true;
+          terminal.clear();
+          break;
 
-        socket = new WebSocket(
-          `ws://localhost:4000/api/minishell/ws?sessionId=${sessionId}`,
-        );
+        case "output":
+          terminal.write(message.data);
+          break;
+      }
+    });
 
-        socket.addEventListener("open", () => {
-          if (!socket) return;
+    socket.addEventListener("close", () => {
+      if (!isReady) {
+        terminal.writeln("\r\n\x1b[31mFailed to start Minishell.\x1b[0m");
+      } else {
+        terminal.writeln("\r\n\x1b[90mSession closed.\x1b[0m");
+      }
+    });
 
-          socket.send(
-            JSON.stringify({
-              type: "resize",
-              cols: terminal.cols,
-              rows: terminal.rows,
-            }),
-          );
-        });
+    socket.addEventListener("error", () => {
+      terminal.writeln("\r\n\x1b[31mConnection error.\x1b[0m");
+    });
 
-        socket.addEventListener("message", (event) => {
-          const message = JSON.parse(event.data);
-
-          if (message.type === "output") {
-            terminal.write(message.data);
-          }
-        });
-
-        socket.addEventListener("error", () => {
-          terminal.write("\r\n\x1b[31mConnection error.\x1b[0m\r\n");
-        });
-
-        terminal.onData((data) => {
-          if (socket?.readyState === WebSocket.OPEN) {
-            socket.send(
-              JSON.stringify({
-                type: "input",
-                data,
-              }),
-            );
-          }
-        });
-      } catch {
-        terminal.write(
-          "\x1b[31mFailed to start Minishell.\x1b[0m\r\n",
+    const dataDisposable = terminal.onData((data) => {
+      if (socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            type: "input",
+            data,
+          }),
         );
       }
-    };
+    });
 
     const handleResize = () => {
       fitAddon.fit();
 
-      if (socket?.readyState === WebSocket.OPEN) {
+      if (socket.readyState === WebSocket.OPEN) {
         socket.send(
           JSON.stringify({
             type: "resize",
@@ -110,20 +101,10 @@ export default function InteractiveTerminal() {
 
     window.addEventListener("resize", handleResize);
 
-    startSession();
-
     return () => {
-      disposed = true;
       window.removeEventListener("resize", handleResize);
-
-      socket?.close();
-
-      if (sessionId) {
-        fetch(`${API_URL}/api/minishell/session/${sessionId}`, {
-          method: "DELETE",
-        }).catch(() => {});
-      }
-
+      dataDisposable.dispose();
+      socket.close();
       terminal.dispose();
     };
   }, []);

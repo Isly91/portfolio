@@ -1,22 +1,25 @@
-const express = require("express");
-const cors = require("cors");
-const { execFile } = require("child_process");
-const crypto = require("crypto");
+import express from "express";
+import cors from "cors";
+import { execFile } from "child_process";
+import crypto from "crypto";
+import { WebSocketServer } from "ws";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-  })
-);
+const PORT = Number(process.env.PORT || 5000);
+const FRONTEND_ORIGIN =
+  process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+const IMAGE = process.env.WEBSERVER_IMAGE || "isly-webserver:latest";
 
-const PORT = 5000;
-const IMAGE = "isly-webserver:latest";
+app.use(cors({ origin: FRONTEND_ORIGIN }));
+app.use(express.json({ limit: "16kb" }));
 
+// sessionId -> containerName
 const sessions = new Map();
 
-app.use(express.json({ limit: "16kb" }));
+// ============================================================================
+// Utilities
+// ============================================================================
 
 function docker(args, encoding = "utf8") {
   return new Promise((resolve, reject) => {
@@ -36,6 +39,11 @@ function docker(args, encoding = "utf8") {
       }
     );
   });
+}
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true;
+  return origin === FRONTEND_ORIGIN;
 }
 
 function validatePath(path) {
@@ -64,50 +72,20 @@ function validateMethod(method) {
   return method;
 }
 
-/* -------------------------------------------------------------------------- */
-/*                               CREATE SESSION                               */
-/* -------------------------------------------------------------------------- */
+// ============================================================================
+// HTTP Routes
+// ============================================================================
 
-app.post("/api/webserver/session", async (req, res) => {
-  const sessionId = crypto.randomUUID();
-  const containerName = `portfolio-webserv-${sessionId}`;
-
-  try {
-    await docker([
-      "run",
-      "-d",
-      "--name",
-      containerName,
-      "--network",
-      "none",
-      "--memory",
-      "128m",
-      "--memory-swap",
-      "128m",
-      "--pids-limit",
-      "64",
-      "--cap-drop",
-      "ALL",
-      "--security-opt",
-      "no-new-privileges",
-      IMAGE,
-    ]);
-
-    sessions.set(sessionId, containerName);
-
-    res.json({ sessionId });
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      error: "Failed to start Webserver sandbox",
-    });
-  }
+app.get("/health", (_, res) => {
+  res.json({
+    ok: true,
+    sessions: sessions.size,
+  });
 });
 
-/* -------------------------------------------------------------------------- */
-/*                          HTTP REQUEST TO C++ WEBSERVER                      */
-/* -------------------------------------------------------------------------- */
+// ----------------------------------------------------------------------------
+// Send HTTP request to the C++ webserver running inside the container.
+// ----------------------------------------------------------------------------
 
 app.post("/api/webserver/request/:sessionId", async (req, res) => {
   try {
@@ -120,7 +98,7 @@ app.post("/api/webserver/request/:sessionId", async (req, res) => {
       });
     }
 
-    const method = validateMethod(req.body.method);
+    const method = validateMethod(req.body.method || "GET");
     const path = validatePath(req.body.path || "/");
 
     const output = await docker(
@@ -155,6 +133,7 @@ app.post("/api/webserver/request/:sessionId", async (req, res) => {
 
     const lines = headerPart.split("\r\n");
     const statusLine = lines.shift() || "";
+
     const statusMatch = statusLine.match(/HTTP\/[\d.]+\s+(\d+)/);
 
     const headers = {};
@@ -165,6 +144,7 @@ app.post("/api/webserver/request/:sessionId", async (req, res) => {
 
       const key = line.slice(0, index).trim();
       const value = line.slice(index + 1).trim();
+
       headers[key] = value;
     }
 
@@ -187,9 +167,9 @@ app.post("/api/webserver/request/:sessionId", async (req, res) => {
   }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                   SERVE IMAGES / CSS / JS FROM THE CONTAINER                */
-/* -------------------------------------------------------------------------- */
+// ----------------------------------------------------------------------------
+// Serve images, CSS and JS from the sandbox container.
+// ----------------------------------------------------------------------------
 
 app.get("/api/webserver/file/:sessionId/*path", async (req, res) => {
   try {
@@ -202,9 +182,6 @@ app.get("/api/webserver/file/:sessionId/*path", async (req, res) => {
 
     const filePath = "/" + req.params.path.join("/");
 
-    console.log("Serving:", filePath);
-
-    // Una SOLA richiesta GET con header + body
     const output = await docker(
       [
         "exec",
@@ -219,6 +196,7 @@ app.get("/api/webserver/file/:sessionId/*path", async (req, res) => {
     );
 
     const separator = output.indexOf("\r\n\r\n");
+
     if (separator === -1) {
       return res.sendStatus(500);
     }
@@ -234,35 +212,105 @@ app.get("/api/webserver/file/:sessionId/*path", async (req, res) => {
     );
 
     res.send(body);
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     res.sendStatus(500);
   }
 });
 
-/* -------------------------------------------------------------------------- */
-/*                              DESTROY SESSION                               */
-/* -------------------------------------------------------------------------- */
+// ============================================================================
+// HTTP Server
+// ============================================================================
 
-app.delete("/api/webserver/session/:sessionId", async (req, res) => {
-  const { sessionId } = req.params;
-  const containerName = sessions.get(sessionId);
+const server = app.listen(PORT, () => {
+  console.log(`Webserver backend listening on port ${PORT}`);
+});
 
-  if (!containerName) {
-    return res.json({ ok: true });
+// ============================================================================
+// WebSocket (owns the Docker container lifecycle)
+// ============================================================================
+
+const wss = new WebSocketServer({
+  server,
+  path: "/api/webserver/ws",
+});
+
+wss.on("connection", async (ws, req) => {
+  const origin = req.headers.origin;
+
+  if (!isAllowedOrigin(origin)) {
+    ws.close(1008, "Invalid origin");
+    return;
+  }
+
+  const sessionId = crypto.randomUUID();
+  const containerName = `portfolio-webserv-${sessionId}`;
+
+  let cleaned = false;
+
+  async function cleanup() {
+    if (cleaned) return;
+    cleaned = true;
+
+    console.log(`Destroying ${containerName}`);
+
+    sessions.delete(sessionId);
+
+    try {
+      await docker(["rm", "-f", containerName]);
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   try {
-    await docker(["rm", "-f", containerName]);
-  } catch (error) {
-    console.error(error);
+    console.log(`Starting ${containerName}`);
+
+    await docker([
+      "run",
+      "-d",
+      "--name",
+      containerName,
+      "--network",
+      "none",
+      "--memory",
+      "128m",
+      "--memory-swap",
+      "128m",
+      "--pids-limit",
+      "64",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges",
+      IMAGE,
+    ]);
+
+    sessions.set(sessionId, containerName);
+
+    ws.send(
+      JSON.stringify({
+        type: "ready",
+        sessionId,
+      })
+    );
+
+    ws.on("close", cleanup);
+    ws.on("error", cleanup);
+  } catch (err) {
+    console.error(err);
+
+    await cleanup();
+
+    if (ws.readyState === ws.OPEN) {
+      ws.send(
+        JSON.stringify({
+          type: "error",
+          message: "Failed to start Webserver sandbox.",
+        })
+      );
+    }
+
+    ws.close();
   }
-
-  sessions.delete(sessionId);
-
-  res.json({ ok: true });
-});
-
-app.listen(PORT, () => {
-  console.log(`Webserver backend listening on port ${PORT}`);
 });

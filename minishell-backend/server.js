@@ -8,21 +8,23 @@ import { WebSocketServer } from "ws";
 const app = express();
 
 const PORT = Number(process.env.PORT || 4000);
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:3000";
-const SANDBOX_IMAGE = process.env.MINISHELL_IMAGE || "isly-minishell:latest";
+const FRONTEND_ORIGIN =
+  process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+const SANDBOX_IMAGE =
+  process.env.MINISHELL_IMAGE || "isly-minishell:latest";
 
 const MAX_COMMAND_LENGTH = 1000;
 const MAX_MESSAGE_LENGTH = 4096;
-const MAX_SESSIONS = 10;
-const SESSION_TIMEOUT_MS = 10 * 60 * 1000;
+const MAX_CONNECTIONS = 10;
 
 app.use(cors({ origin: FRONTEND_ORIGIN }));
-app.use(express.json({ limit: "8kb" }));
+app.use(express.json());
 
-const sessions = new Map();
+// Keep track of active websocket sessions.
+const activeConnections = new Set();
 
 // ============================================================================
-// Utility Functions
+// Utilities
 // ============================================================================
 
 function docker(args) {
@@ -32,6 +34,7 @@ function docker(args) {
         reject(new Error(stderr || error.message));
         return;
       }
+
       resolve(stdout.trim());
     });
   });
@@ -42,117 +45,19 @@ function isAllowedOrigin(origin) {
   return origin === FRONTEND_ORIGIN;
 }
 
-function cleanupSession(session) {
-  if (session.timeout) {
-    clearTimeout(session.timeout);
-    session.timeout = null;
-  }
-  if (session.ws && session.ws.readyState === session.ws.OPEN) {
-    session.ws.close(1000, "Session expired");
-  }
-  sessions.delete(session.id);
-}
-
-async function destroySession(session) {
-  cleanupSession(session);
-  try {
-    session.pty.kill();
-  } catch {}
-  try {
-    await docker(["rm", "-f", session.containerName]);
-  } catch {}
-}
-
-// ============================================================================
-// Session Management
-// ============================================================================
-
-async function createSession() {
-  if (sessions.size >= MAX_SESSIONS) {
-    throw new Error("Maximum number of active sessions reached.");
-  }
-
-  const sessionId = randomUUID();
-  const containerName = `minishell-${sessionId}`;
-
-  const ptyProcess = pty.spawn("docker", [
-    "run",
-    "-i",
-    "-t",
-    "--rm",
-    "--name", containerName,
-    "--network", "none",
-    "--memory", "128m",
-    "--memory-swap", "128m",
-    "--read-only",
-    "--tmpfs", "/tmp:rw,nosuid,nodev,noexec,size=16m",
-    "--cap-drop", "ALL",
-    "--security-opt", "no-new-privileges",
-    "--user", "1000:1000",
-    SANDBOX_IMAGE,
-  ], {
-    name: "xterm-color",
-    cols: 120,
-    rows: 30,
-    cwd: "/app",
-    env: { ...process.env, TERM: "xterm-256color" },
-  });
-
-  const session = {
-    id: sessionId,
-    containerName,
-    pty: ptyProcess,
-    ws: null,
-    timeout: null,
-  };
-
-  sessions.set(sessionId, session);
-
-  session.timeout = setTimeout(() => {
-    destroySession(session).catch((error) => {
-      console.error("Failed to destroy expired session:", error);
-    });
-  }, SESSION_TIMEOUT_MS);
-
-  ptyProcess.onExit(() => {
-    cleanupSession(session);
-  });
-
-  return session;
-}
-
 // ============================================================================
 // HTTP Routes
 // ============================================================================
 
 app.get("/health", (_req, res) => {
-  res.json({ ok: true, sessions: sessions.size });
-});
-
-app.post("/api/minishell/session", async (_req, res) => {
-  try {
-    const session = await createSession();
-    res.json({ sessionId: session.id });
-  } catch (error) {
-    console.error("Failed to create Minishell session:", error);
-    if (error instanceof Error && error.message === "Maximum number of active sessions reached.") {
-      res.status(429).json({ error: "Too many active Minishell sessions." });
-      return;
-    }
-    res.status(500).json({ error: "Failed to create Minishell session." });
-  }
-});
-
-app.delete("/api/minishell/session/:id", async (req, res) => {
-  const session = sessions.get(req.params.id);
-  if (session) {
-    await destroySession(session);
-  }
-  res.status(204).end();
+  res.json({
+    ok: true,
+    activeConnections: activeConnections.size,
+  });
 });
 
 // ============================================================================
-// Server Initialization
+// Server
 // ============================================================================
 
 const server = app.listen(PORT, () => {
@@ -160,75 +65,145 @@ const server = app.listen(PORT, () => {
 });
 
 // ============================================================================
-// WebSocket Server
+// WebSocket
 // ============================================================================
 
-const wss = new WebSocketServer({ server, path: "/api/minishell/ws" });
+const wss = new WebSocketServer({
+  server,
+  path: "/api/minishell/ws",
+});
 
-wss.on("connection", async (ws, req) => {
+wss.on("connection", (ws, req) => {
   const origin = req.headers.origin;
 
-  // Validate origin
   if (!isAllowedOrigin(origin)) {
     ws.close(1008, "Invalid origin");
     return;
   }
 
-  // Extract session ID from URL query parameters
-  const url = new URL(req.url, `http://${req.headers.host}`);
-  const sessionId = url.searchParams.get("sessionId");
-
-  if (!sessionId) {
-    ws.close(1008, "Missing sessionId");
+  if (activeConnections.size >= MAX_CONNECTIONS) {
+    ws.close(1013, "Server busy");
     return;
   }
 
-  // Retrieve session
-  const session = sessions.get(sessionId);
-  if (!session) {
-    ws.close(1008, "Invalid session");
-    return;
-  }
+  activeConnections.add(ws);
 
-  session.ws = ws;
+  const containerName = `minishell-${randomUUID()}`;
 
-  // Forward PTY output to WebSocket
-  const dataDisposable = session.pty.onData((data) => {
+  console.log(`Starting container ${containerName}`);
+
+  const terminal = pty.spawn(
+    "docker",
+    [
+      "run",
+      "-it",
+      "--rm",
+      "--name",
+      containerName,
+      "--network",
+      "none",
+      "--memory",
+      "128m",
+      "--memory-swap",
+      "128m",
+      "--read-only",
+      "--tmpfs",
+      "/tmp:rw,nosuid,nodev,noexec,size=16m",
+      "--cap-drop",
+      "ALL",
+      "--security-opt",
+      "no-new-privileges",
+      "--user",
+      "1000:1000",
+      SANDBOX_IMAGE,
+    ],
+    {
+      name: "xterm-256color",
+      cols: 120,
+      rows: 30,
+      cwd: "/app",
+      env: {
+        TERM: "xterm-256color",
+      },
+    }
+  );
+
+  let ready = false;
+
+  const startupTimeout = setTimeout(() => {
+    if (!ready && ws.readyState === ws.OPEN) {
+      ws.close(1013, "Container startup timeout");
+    }
+  }, 5000);
+
+  const disposeOutput = terminal.onData((data) => {
+    if (!ready) {
+      ready = true;
+      clearTimeout(startupTimeout);
+
+      ws.send(JSON.stringify({ type: "ready" }));
+    }
+
     if (ws.readyState === ws.OPEN) {
-      ws.send(JSON.stringify({ type: "output", data }));
+      ws.send(
+        JSON.stringify({
+          type: "output",
+          data,
+        })
+      );
     }
   });
 
-  // Handle WebSocket messages
+  terminal.onExit(() => {
+    if (ws.readyState === ws.OPEN) {
+      ws.close(1000, "Terminal exited");
+    }
+  });
+
   ws.on("message", (message) => {
     if (message.length > MAX_MESSAGE_LENGTH) return;
 
     try {
       const payload = JSON.parse(message.toString());
 
-      // Handle terminal input
       if (payload.type === "input" && typeof payload.data === "string") {
-        if (payload.data.length > MAX_COMMAND_LENGTH) return;
-        session.pty.write(payload.data);
+        if (payload.data.length <= MAX_COMMAND_LENGTH) {
+          terminal.write(payload.data);
+        }
       }
 
-      // Handle terminal resize
-      if (payload.type === "resize" && Number.isInteger(payload.cols) && Number.isInteger(payload.rows)) {
-        session.pty.resize(
+      if (
+        payload.type === "resize" &&
+        Number.isInteger(payload.cols) &&
+        Number.isInteger(payload.rows)
+      ) {
+        terminal.resize(
           Math.max(20, Math.min(payload.cols, 200)),
           Math.max(5, Math.min(payload.rows, 100))
         );
       }
     } catch {
-      // Ignore malformed WebSocket messages
+      // Ignore malformed websocket messages.
     }
   });
 
-  // Handle WebSocket disconnect
-  ws.on("close", () => {
-    dataDisposable.dispose();
-    if (session.ws === ws) {
-      session.ws = null;
-    }
+  ws.on("close", async () => {
+    console.log(`Destroying container ${containerName}`);
+
+    clearTimeout(startupTimeout);
+    disposeOutput.dispose();
+    activeConnections.delete(ws);
+
+    try {
+      terminal.kill();
+    } catch {}
+
+    try {
+      await docker(["rm", "-f", containerName]);
+    } catch {}
+  });
+
+  ws.on("error", () => {
+    ws.close();
   });
 });

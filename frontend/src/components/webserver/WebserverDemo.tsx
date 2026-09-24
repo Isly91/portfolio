@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const API = "http://localhost:5000";
+const WS = "ws://localhost:5000/api/webserver/ws";
 
 type ResponseData = {
   status: number;
@@ -12,7 +13,6 @@ type ResponseData = {
 
 export default function WebserverDemo() {
   const [session, setSession] = useState("");
-  const [initialized, setInitialized] = useState(false);
   const [path, setPath] = useState("/www/");
   const [method, setMethod] = useState("GET");
   const [response, setResponse] = useState<ResponseData | null>(null);
@@ -20,49 +20,45 @@ export default function WebserverDemo() {
   const [starting, setStarting] = useState(true);
   const [error, setError] = useState("");
 
-  const createSession = useCallback(async () => {
-    try {
+  // ---------------------------------------------------------------------------
+  // Create / destroy sandbox through WebSocket
+  // ---------------------------------------------------------------------------
+
+  useEffect(() => {
+    const ws = new WebSocket(WS);
+
+    ws.onopen = () => {
       setStarting(true);
       setError("");
+    };
 
-      const r = await fetch(`${API}/api/webserver/session`, {
-        method: "POST",
-      });
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
 
-      if (!r.ok) {
-        throw new Error("Failed to start Webserver sandbox");
+      if (message.type === "ready") {
+        setSession(message.sessionId);
+        setStarting(false);
       }
 
-      const data = await r.json();
-
-      if (!data.sessionId) {
-        throw new Error("No session ID received");
+      if (message.type === "error") {
+        setError(message.message);
+        setStarting(false);
       }
+    };
 
-      setSession(data.sessionId);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Unknown error");
-    } finally {
+    ws.onerror = () => {
+      setError("WebSocket connection failed.");
       setStarting(false);
-    }
+    };
+
+    return () => {
+      ws.close();
+    };
   }, []);
 
-  useEffect(() => {
-    if (initialized) return;
-
-    setInitialized(true);
-    createSession();
-  }, [initialized, createSession]);
-
-  useEffect(() => {
-    return () => {
-      if (!session) return;
-
-      fetch(`${API}/api/webserver/session/${session}`, {
-        method: "DELETE",
-      }).catch(() => {});
-    };
-  }, [session]);
+  // ---------------------------------------------------------------------------
+  // Send HTTP request to sandbox
+  // ---------------------------------------------------------------------------
 
   async function sendRequest() {
     if (!session || loading) return;
@@ -86,12 +82,11 @@ export default function WebserverDemo() {
         }
       );
 
-      const data = await r.json();
-
-      if (!r.ok || data.error) {
-        throw new Error(data.error || "Request failed");
+      if (!r.ok) {
+        throw new Error(await r.text());
       }
 
+      const data: ResponseData = await r.json();
       setResponse(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Request failed");
@@ -100,14 +95,22 @@ export default function WebserverDemo() {
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+  function handleKeyDown(
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) {
     if (e.key === "Enter") {
       sendRequest();
     }
   }
 
-  const htmlPreview =
-    response?.body
+  // ---------------------------------------------------------------------------
+  // Rewrite HTML asset URLs
+  // ---------------------------------------------------------------------------
+
+  const htmlPreview = useMemo(() => {
+    if (!response || !session) return "";
+
+    return response.body
       .replace(
         /src="\/([^"]+)"/g,
         `src="${API}/api/webserver/file/${session}/$1"`
@@ -116,7 +119,6 @@ export default function WebserverDemo() {
         /src="([^"/][^"]*)"/g,
         `src="${API}/api/webserver/file/${session}/www/$1"`
       )
-
       .replace(
         /href="\/([^"]+)"/g,
         `href="${API}/api/webserver/file/${session}/$1"`
@@ -124,16 +126,19 @@ export default function WebserverDemo() {
       .replace(
         /href="([^"/][^"]*)"/g,
         `href="${API}/api/webserver/file/${session}/www/$1"`
-      ) ?? "";
-  
+      );
+  }, [response, session]);
+
   const contentType =
-  response?.headers["content-type"] ||
-  response?.headers["Content-Type"] ||
-  "";
+    response?.headers["content-type"] ??
+    response?.headers["Content-Type"] ??
+    "";
+
+  // ---------------------------------------------------------------------------
 
   return (
     <div className="overflow-hidden rounded-3xl border border-zinc-800 bg-zinc-950 text-white shadow-2xl">
-      {/* Terminal header */}
+      {/* Header */}
       <div className="flex items-center gap-2 border-b border-zinc-800 px-4 py-3">
         <div className="h-3 w-3 rounded-full bg-red-500" />
         <div className="h-3 w-3 rounded-full bg-yellow-500" />
@@ -155,7 +160,11 @@ export default function WebserverDemo() {
           />
 
           <span className="text-xs text-zinc-500">
-            {starting ? "starting" : error ? "error" : "online"}
+            {starting
+              ? "starting"
+              : error
+              ? "error"
+              : "online"}
           </span>
         </div>
       </div>
@@ -167,7 +176,7 @@ export default function WebserverDemo() {
             value={method}
             onChange={(e) => setMethod(e.target.value)}
             disabled={starting || loading}
-            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm outline-none transition focus:border-blue-500 disabled:opacity-50"
+            className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm outline-none"
           >
             <option>GET</option>
             <option>DELETE</option>
@@ -177,17 +186,16 @@ export default function WebserverDemo() {
             value={path}
             onChange={(e) => setPath(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={starting || loading}
             spellCheck={false}
-            className="min-w-0 flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm outline-none transition focus:border-blue-500 disabled:opacity-50"
+            disabled={starting || loading}
             placeholder="/www/"
+            className="min-w-0 flex-1 rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-2 font-mono text-sm outline-none"
           />
-          
 
           <button
             onClick={sendRequest}
             disabled={starting || loading || !session}
-            className="rounded-lg bg-blue-600 px-5 py-2 font-medium transition hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-blue-600 px-5 py-2 font-medium hover:bg-blue-500 disabled:opacity-50"
           >
             {loading ? "Sending..." : "Send"}
           </button>
@@ -211,13 +219,11 @@ export default function WebserverDemo() {
       <div className="min-h-[260px] p-4">
         {!response && !error && (
           <div className="flex min-h-[220px] items-center justify-center">
-            <div className="text-center">
-              <p className="font-mono text-sm text-zinc-500">
-                {starting
-                  ? "Starting Webserver sandbox..."
-                  : "Send an HTTP request to begin"}
-              </p>
-            </div>
+            <p className="font-mono text-sm text-zinc-500">
+              {starting
+                ? "Starting Webserver sandbox..."
+                : "Send an HTTP request to begin"}
+            </p>
           </div>
         )}
 
@@ -230,7 +236,8 @@ export default function WebserverDemo() {
 
               <span
                 className={`rounded-md px-2 py-1 font-mono text-xs ${
-                  response.status >= 200 && response.status < 300
+                  response.status >= 200 &&
+                  response.status < 300
                     ? "bg-green-500/10 text-green-400"
                     : response.status >= 400
                     ? "bg-red-500/10 text-red-400"
@@ -248,15 +255,16 @@ export default function WebserverDemo() {
 
               <pre className="overflow-x-auto font-mono text-xs leading-6 text-zinc-300">
                 {Object.entries(response.headers)
-                  .map(([key, value]) => `${key}: ${value}`)
+                  .map(([k, v]) => `${k}: ${v}`)
                   .join("\n")}
               </pre>
             </div>
-            
+
             <div className="rounded-xl border border-zinc-800 bg-black/40 p-4">
               <p className="mb-3 font-mono text-xs text-zinc-500">
                 BODY PREVIEW
               </p>
+
               {contentType.includes("text/html") ? (
                 <iframe
                   title="Webserver Preview"
@@ -267,8 +275,8 @@ export default function WebserverDemo() {
               ) : contentType.startsWith("image/") ? (
                 <img
                   src={`data:${contentType};base64,${response.body}`}
-                  alt="Webserver response"
-                  className="max-h-[450px] w-full object-contain rounded-lg border border-zinc-700"
+                  alt="Preview"
+                  className="max-h-[450px] w-full rounded-lg border border-zinc-700 object-contain"
                 />
               ) : (
                 <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap break-words font-mono text-xs leading-6 text-zinc-300">
