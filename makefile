@@ -1,13 +1,15 @@
 NAME = portfolio
 
 COMPOSE = docker compose
+COMPOSE_PROD = docker compose -f docker-compose.prod.yml
+
 WEBSERVER_IMAGE = isly-webserver:latest
 WEBSERVER_DIR = ./webserver-backend/webserver
+
 MINISHELL_IMAGE = isly-minishell:latest
-# The sandbox Dockerfile lives in ./minishell-backend/sandbox and creates /opt/minishell.
 MINISHELL_DIR = ./minishell-backend/sandbox
 
-.PHONY: all build build-webserver build-minishell up down restart logs ps clean fclean clean-all re
+.PHONY: all build up up-prod down down-prod restart logs ps clean fclean clean-all re
 
 all: up
 
@@ -20,6 +22,8 @@ build-webserver:
 build-minishell:
 	docker build -t $(MINISHELL_IMAGE) $(MINISHELL_DIR)
 
+# ===== Development =====
+
 up: build-webserver build-minishell
 	$(COMPOSE) up --build -d
 
@@ -27,6 +31,16 @@ down:
 	$(COMPOSE) down
 
 restart: down up
+
+# ===== Production =====
+
+up-prod: build-webserver build-minishell
+	$(COMPOSE_PROD) up --build -d
+
+down-prod:
+	$(COMPOSE_PROD) down
+
+# ===== Utilities =====
 
 logs:
 	$(COMPOSE) logs -f

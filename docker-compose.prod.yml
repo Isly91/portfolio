@@ -1,0 +1,40 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    container_name: portfolio_frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - minishell-backend
+      - webserver-backend
+
+  minishell-backend:
+    build:
+      context: ./minishell-backend
+    container_name: portfolio_backend
+    ports:
+      - "4000:4000"
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+    environment:
+      NODE_ENV: production
+      MINISHELL_IMAGE: isly-minishell:latest
+    mem_limit: 512m
+    pids_limit: 128
+
+  webserver-backend:
+    build:
+      context: ./webserver-backend
+    container_name: portfolio_webserver_backend
+    ports:
+      - "5000:5000"
+    volumes:
+      - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
+    environment:
+      NODE_ENV: production
+      WEBSERVER_IMAGE: isly-webserver:latest
+    mem_limit: 512m
+    pids_limit: 128
