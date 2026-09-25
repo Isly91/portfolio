@@ -7,6 +7,7 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
+      FRONTEND_ORIGIN: https://isly.dev
     depends_on:
       - minishell-backend
       - webserver-backend
@@ -21,6 +22,7 @@ services:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
     environment:
       NODE_ENV: production
+      FRONTEND_ORIGIN: https://isly.dev
       MINISHELL_IMAGE: isly-minishell:latest
     mem_limit: 512m
     pids_limit: 128
@@ -35,6 +37,7 @@ services:
       - ${DOCKER_SOCKET:-/var/run/docker.sock}:/var/run/docker.sock
     environment:
       NODE_ENV: production
+      FRONTEND_ORIGIN: https://isly.dev
       WEBSERVER_IMAGE: isly-webserver:latest
     mem_limit: 512m
     pids_limit: 128
