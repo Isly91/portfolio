@@ -5,7 +5,7 @@ export default function Contact() {
     {
       label: "Email",
       value: "behlulistudio@gmail.com",
-      href: "mailto:behlulistudio@gmail.com",
+      href: "mailto:behlulistudio@gmail.com?subject=Software%20Engineering%20Opportunity",
     },
     {
       label: "GitHub",

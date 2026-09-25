@@ -2,8 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 
-const API = "http://localhost:5000";
-const WS = "ws://localhost:5000/api/webserver/ws";
+const API =
+  process.env.NEXT_PUBLIC_API_URL ??
+  "http://localhost:5000";
+
+const WS =
+  process.env.NEXT_PUBLIC_WEBSERVER_WS ??
+  "ws://localhost:5000/api/webserver/ws";
 
 type ResponseData = {
   status: number;

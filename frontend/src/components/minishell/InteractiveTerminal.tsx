@@ -5,7 +5,7 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
-const WS_URL =
+const WS =
   process.env.NEXT_PUBLIC_MINISHELL_WS ??
   "ws://localhost:4000/api/minishell/ws";
 
@@ -33,7 +33,7 @@ export default function InteractiveTerminal() {
 
     terminal.writeln("\x1b[90mStarting Minishell container...\x1b[0m");
 
-    const socket = new WebSocket(WS_URL);
+    const socket = new WebSocket(WS);
 
     let isReady = false;
 
