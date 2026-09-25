@@ -4,6 +4,7 @@ services:
     build:
       context: ./frontend
     container_name: portfolio_frontend
+    command: npm run dev
     ports:
       - "3000:3000"
     volumes:
