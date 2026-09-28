@@ -1,14 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-
-const API =
-  process.env.NEXT_PUBLIC_API_URL ??
-  "http://localhost:5000";
-
-const WS =
-  process.env.NEXT_PUBLIC_WEBSERVER_WS ??
-  "ws://localhost:5000/api/webserver/ws";
+import { useEffect, useState, useMemo } from "react";
 
 type ResponseData = {
   status: number;
@@ -17,6 +9,16 @@ type ResponseData = {
 };
 
 export default function WebserverDemo() {
+  const API =
+    process.env.NEXT_PUBLIC_API_URL ||
+    (typeof window !== "undefined" ? window.location.origin : "");
+
+  const WS =
+    process.env.NEXT_PUBLIC_WEBSERVER_WS ||
+    (typeof window !== "undefined"
+      ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/api/webserver/ws`
+      : "");
+
   const [session, setSession] = useState("");
   const [path, setPath] = useState("/www/");
   const [method, setMethod] = useState("GET");
@@ -30,6 +32,7 @@ export default function WebserverDemo() {
   // ---------------------------------------------------------------------------
 
   useEffect(() => {
+    if (!WS) return;
     const ws = new WebSocket(WS);
 
     ws.onopen = () => {
@@ -59,7 +62,7 @@ export default function WebserverDemo() {
     return () => {
       ws.close();
     };
-  }, []);
+  }, [WS]);
 
   // ---------------------------------------------------------------------------
   // Send HTTP request to sandbox
@@ -132,7 +135,7 @@ export default function WebserverDemo() {
         /href="([^"/][^"]*)"/g,
         `href="${API}/api/webserver/file/${session}/www/$1"`
       );
-  }, [response, session]);
+  }, [response, session, API]);
 
   const contentType =
     response?.headers["content-type"] ??

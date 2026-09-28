@@ -5,15 +5,16 @@ import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import "@xterm/xterm/css/xterm.css";
 
-const WS =
-  process.env.NEXT_PUBLIC_MINISHELL_WS ??
-  "ws://localhost:4000/api/minishell/ws";
-
 export default function InteractiveTerminal() {
+  const WS =
+  process.env.NEXT_PUBLIC_MINISHELL_WS ||
+  (typeof window !== "undefined"
+    ? `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/api/minishell/ws`
+    : "");
   const terminalRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!terminalRef.current) return;
+    if (!terminalRef.current || !WS) return;
 
     const terminal = new Terminal({
       cursorBlink: true,
@@ -107,7 +108,7 @@ export default function InteractiveTerminal() {
       socket.close();
       terminal.dispose();
     };
-  }, []);
+  }, [WS]);
 
   return (
     <div

@@ -8,8 +8,11 @@ import { WebSocketServer } from "ws";
 const app = express();
 
 const PORT = Number(process.env.PORT || 4000);
-const FRONTEND_ORIGIN =
-  process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+const ALLOWED_ORIGINS = [
+  "https://isly.dev",
+  "https://www.isly.dev",
+  "http://localhost:3000",
+];
 const SANDBOX_IMAGE =
   process.env.MINISHELL_IMAGE || "isly-minishell:latest";
 
@@ -17,7 +20,7 @@ const MAX_COMMAND_LENGTH = 1000;
 const MAX_MESSAGE_LENGTH = 4096;
 const MAX_CONNECTIONS = 10;
 
-app.use(cors({ origin: FRONTEND_ORIGIN }));
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json());
 
 // Keep track of active websocket sessions.
@@ -42,7 +45,7 @@ function docker(args) {
 
 function isAllowedOrigin(origin) {
   if (!origin) return true;
-  return origin === FRONTEND_ORIGIN;
+  return ALLOWED_ORIGINS.includes(origin);
 }
 
 // ============================================================================

@@ -7,11 +7,14 @@ import { WebSocketServer } from "ws";
 const app = express();
 
 const PORT = Number(process.env.PORT || 5000);
-const FRONTEND_ORIGIN =
-  process.env.FRONTEND_ORIGIN || "http://localhost:3000";
+const ALLOWED_ORIGINS = [
+  "https://isly.dev",
+  "https://www.isly.dev",
+  "http://localhost:3000",
+];
 const IMAGE = process.env.WEBSERVER_IMAGE || "isly-webserver:latest";
 
-app.use(cors({ origin: FRONTEND_ORIGIN }));
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 app.use(express.json({ limit: "16kb" }));
 
 // sessionId -> containerName
@@ -43,7 +46,7 @@ function docker(args, encoding = "utf8") {
 
 function isAllowedOrigin(origin) {
   if (!origin) return true;
-  return origin === FRONTEND_ORIGIN;
+  return ALLOWED_ORIGINS.includes(origin);
 }
 
 function validatePath(path) {
